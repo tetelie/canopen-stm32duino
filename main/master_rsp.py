@@ -2,7 +2,7 @@ import can
 import canopen
 
 # Ouvre l'interface CAN (SocketCAN)
-bus = can.interface.Bus(channel='can0', bustype='socketcan')
+bus = can.interface.Bus(channel='can0', interface='socketcan')
 
 # Crée un client CANopen (esclave nœud 0)
 network = canopen.Network()
@@ -10,7 +10,7 @@ network.connect(bustype='socketcan', channel='can0', bitrate=500000)
 
 # Charge un Object Dictionary (exemple minimal, tu peux utiliser un vrai EDS file)
 # Ici on crée un objet manuel, sans EDS
-node = canopen.RemoteNode(0, 'path/to/eds/file.eds')  # idéalement avec un fichier EDS réel
+node = canopen.RemoteNode(0, 'stm32.eds')
 network.add_node(node)
 
 # Demande de lecture SDO sur 0x2000:0
