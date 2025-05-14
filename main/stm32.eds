@@ -24,6 +24,8 @@ BaudRate_7=1000
 SimpleBootUpMaster=0
 SimpleBootUpSlave=1
 
+[DeviceCom]
+NodeID=0
 
 [MandatoryObjects]
 1=0x1000
