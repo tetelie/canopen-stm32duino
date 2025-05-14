@@ -2,7 +2,7 @@ import can
 import canopen
 
 # Ouvre l'interface CAN (SocketCAN)
-bus = can.interface.Bus(channel='can0', bustype='socketcan')
+bus = can.interface.Bus(channel='can0', interface='socketcan')
 
 # Crée un client CANopen (esclave nœud 0)
 network = canopen.Network()

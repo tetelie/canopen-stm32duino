@@ -1,34 +1,9 @@
-/home/vacop/Desktop/VACOP/main/master_rsp.py:5: DeprecationWarning: The 'bustype' argument is deprecated since python-can v4.2.0, and scheduled for removal in python-can v5.0.0. Use 'interface' instead.
-  bus = can.interface.Bus(channel='can0', bustype='socketcan')
-Traceback (most recent call last):
-  File "/usr/lib/python3.11/configparser.py", line 805, in get
-    value = d[option]
-            ~^^^^^^^^
-  File "/usr/lib/python3.11/collections/__init__.py", line 1004, in __getitem__
-    return self.__missing__(key)            # support subclasses that define __missing__
-           ^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.11/collections/__init__.py", line 996, in __missing__
-    raise KeyError(key)
-KeyError: 'Lines'
-
-During handling of the above exception, another exception occurred:
-
 Traceback (most recent call last):
   File "/home/vacop/Desktop/VACOP/main/master_rsp.py", line 13, in <module>
     node = canopen.RemoteNode(0, 'stm32.eds')  # idéalement avec un fichier EDS réel
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/vacop/.local/lib/python3.11/site-packages/canopen/node/remote.py", line 33, in __init__
-    super(RemoteNode, self).__init__(node_id, object_dictionary)
-  File "/home/vacop/.local/lib/python3.11/site-packages/canopen/node/base.py", line 23, in __init__
-    object_dictionary = import_od(object_dictionary, node_id)
-                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/vacop/.local/lib/python3.11/site-packages/canopen/objectdictionary/__init__.py", line 82, in import_od
-    return eds.import_eds(source, node_id)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/vacop/.local/lib/python3.11/site-packages/canopen/objectdictionary/eds.py", line 44, in import_eds
-    linecount = int(eds.get("Comments", "Lines"), 0)
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.11/configparser.py", line 808, in get
-    raise NoOptionError(option, section)
-configparser.NoOptionError: No option 'Lines' in section: 'Comments'
+  File "/home/vacop/.local/lib/python3.11/site-packages/canopen/node/remote.py", line 39, in __init__
+    self.sdo = self.add_sdo(0x600 + self.id, 0x580 + self.id)
+                            ~~~~~~^~~~~~~~~
+TypeError: unsupported operand type(s) for +: 'int' and 'NoneType'
 SocketcanBus was not properly shut down

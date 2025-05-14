@@ -24,8 +24,6 @@ BaudRate_7=1000
 SimpleBootUpMaster=0
 SimpleBootUpSlave=1
 
-[Comments]
-This is a minimal EDS file for a Bluepill CANopen slave with 0x2000:00 as a readable variable.
 
 [MandatoryObjects]
 1=0x1000
