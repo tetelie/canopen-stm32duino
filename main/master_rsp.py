@@ -11,6 +11,7 @@ network.connect(bustype='socketcan', channel='can0', bitrate=500000)
 # Charge un Object Dictionary (exemple minimal, tu peux utiliser un vrai EDS file)
 # Ici on crée un objet manuel, sans EDS
 node = canopen.RemoteNode(0, 'stm32.eds')
+node.id = 0
 network.add_node(node)
 
 # Demande de lecture SDO sur 0x2000:0
