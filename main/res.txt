@@ -1,10 +1,5 @@
-vacop@raspberrypi:~/Desktop/VACOP/main $ python3 master_rsp.py 
+vacop@raspberrypi:~/Desktop/VACOP/canopen/test $ python3 test_network.py 
 Traceback (most recent call last):
-  File "/home/vacop/Desktop/VACOP/main/master_rsp.py", line 13, in <module>
-    node = canopen.RemoteNode(0, 'stm32.eds')
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/vacop/.local/lib/python3.11/site-packages/canopen/node/remote.py", line 39, in __init__
-    self.sdo = self.add_sdo(0x600 + self.id, 0x580 + self.id)
-                            ~~~~~~^~~~~~~~~
-TypeError: unsupported operand type(s) for +: 'int' and 'NoneType'
-SocketcanBus was not properly shut down
+  File "/home/vacop/Desktop/VACOP/canopen/test/test_network.py", line 9, in <module>
+    from .util import SAMPLE_EDS
+ImportError: attempted relative import with no known parent package
