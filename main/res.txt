@@ -1,18 +1,10 @@
-python3 master_rsp.py 
+vacop@raspberrypi:~/Desktop/VACOP/main $ python3 master_rsp.py 
 Traceback (most recent call last):
   File "/home/vacop/Desktop/VACOP/main/master_rsp.py", line 13, in <module>
     node = canopen.RemoteNode(0, 'stm32.eds')
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/vacop/.local/lib/python3.11/site-packages/canopen/node/remote.py", line 33, in __init__
-    super(RemoteNode, self).__init__(node_id, object_dictionary)
-  File "/home/vacop/.local/lib/python3.11/site-packages/canopen/node/base.py", line 23, in __init__
-    object_dictionary = import_od(object_dictionary, node_id)
-                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/vacop/.local/lib/python3.11/site-packages/canopen/objectdictionary/__init__.py", line 82, in import_od
-    return eds.import_eds(source, node_id)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/vacop/.local/lib/python3.11/site-packages/canopen/objectdictionary/eds.py", line 78, in import_eds
-    t(int(eds.get("DeviceInfo", eprop), 0))
-      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-ValueError: invalid literal for int() with base 0: ''
+  File "/home/vacop/.local/lib/python3.11/site-packages/canopen/node/remote.py", line 39, in __init__
+    self.sdo = self.add_sdo(0x600 + self.id, 0x580 + self.id)
+                            ~~~~~~^~~~~~~~~
+TypeError: unsupported operand type(s) for +: 'int' and 'NoneType'
 SocketcanBus was not properly shut down
