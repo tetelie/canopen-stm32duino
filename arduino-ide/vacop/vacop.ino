@@ -100,7 +100,7 @@ void setup() {
 }
 
 void loop() {
-    Serial.println("paul est beau");
+    //Serial.println("paul est beau");
     // Tick CANopenNode
     uint32_t now = millis();
     CO_process(CO,true, now, NULL);
