@@ -10,7 +10,7 @@
 
 
 
-CO_NMT_control_t nmt_control;    // il semblerait y avoir un problème à verifier lors des tests
+CO_NMT_control_t nmt_control = CO_NMT_STARTUP_TO_OPERATIONAL;    // il semblerait y avoir un problème à verifier lors des tests
 
 
 STM32_CAN Can1(CAN1, DEF); // Broches PA11/PA12 pour CAN1
@@ -20,6 +20,9 @@ CAN_message_t latestMsg;
 volatile bool newMessage = false;
 bool messagePending = false;
 CAN_message_t msg;
+
+HardwareTimer timer(TIM4);              // TIM1 --> TIM4 https://github.com/stm32duino/Arduino_Core_STM32/wiki/HardwareTimer-library
+volatile bool canopen_1ms_tick = false;
 
 
 /*
@@ -39,24 +42,20 @@ void debug(bool ln = true) {
 template <typename T>
 typename std::enable_if<std::is_integral<T>::value, void>::type
 debug(T message, int format, bool ln = true) {
-    if(DEBUG){
-        if (ln) {
-            Serial.println(message, format);
-        } else {
-            Serial.print(message, format);
-        }
+    if (ln) {
+        Serial.println(message, format);
+    } else {
+        Serial.print(message, format);
     }
 }
 
 // Pour les types génériques
 template <typename T>
 void debug(T message, bool ln = true) {
-    if(DEBUG){
-        if (ln) {
-            Serial.println(message);
-        } else {
-            Serial.print(message);
-        }
+    if (ln) {
+        Serial.println(message);
+    } else {
+        Serial.print(message);
     }
 }
 
@@ -69,6 +68,15 @@ void myRxCallback(void *object, void *msgPtr) {
     CAN_message_t *msg = (CAN_message_t *)msgPtr;
     latestMsg = *msg;
     newMessage = true;
+}
+
+void setup_hardware_timer()
+{
+    timer.setOverflow(1000, MICROSEC_FORMAT); // 1ms
+    timer.attachInterrupt([]() {
+        canopen_1ms_tick = true;
+    });
+    timer.resume();
 }
 
 void setup() {
@@ -134,7 +142,7 @@ void setup() {
 
 
     // Exemple d’enregistrement d’un callback sur l’ID 0x180 (TPDO1 d’un autre noeud)
-    CO_CANrxBufferInit(CO->CANmodule, 0, 0x180, 0x7FF, false, NULL, myRxCallback);
+    CO_CANrxBufferInit(CO->CANmodule, 0, 0x180, 0x7FF, false, &latestMsg, myRxCallback);
 
     debug("après rxBufferInit");
     delay(5000);
@@ -142,24 +150,41 @@ void setup() {
 
 
     debug("CANopenNode prêt");
+
+    // initialisation hardware timer for canopen process
+    setup_hardware_timer();
 }
 
 void loop() {
-    //debug("paul est beau");
-    // Tick CANopenNode
-    uint32_t now = millis();
-    CO_process(CO,true, now, NULL);
+    static uint32_t lastProcessTime = 0;
 
+    if (canopen_1ms_tick) {
+        canopen_1ms_tick = false;
 
-    if (Can1.read(msg)) {
-        messagePending = true; // ← là on injecte dans CANopen
+        uint32_t now = millis();
+        uint32_t diff = now - lastProcessTime;
+        lastProcessTime = now;
+
+        uint32_t timerNext_us = 0;
+        CO_NMT_reset_cmd_t reset;
+
+        reset = CO_process(CO, false, diff * 1000, &timerNext_us);
+        CO_process_RPDO(CO, false, diff * 1000, &timerNext_us);
+        CO_process_TPDO(CO, false, diff * 1000, &timerNext_us);
+
+        if (reset != CO_RESET_NOT) {
+            // Implémenter un redémarrage logiciel ici si besoin
+        }
     }
-    CO_CANinterruptRx(CO->CANmodule);
 
-    // Affiche les messages reçus par le callback
+    // Traitement réception CAN brute (optionnel)
+    if (Can1.read(msg)) {
+        messagePending = true;
+    }
+    CO_CANinterruptRx(CO->CANmodule); // OK ici si tu as bien un message reçu
+
     if (newMessage) {
         newMessage = false;
-
         debug("Reçu ID: 0x", false);
         debug(latestMsg.id, HEX, false);
         debug(" DLC: ", false);
@@ -172,5 +197,5 @@ void loop() {
         debug();
     }
 
-    delay(1);
+    // Ne pas utiliser delay(1); si tu gères la temporisation avec le flag 1ms
 }
