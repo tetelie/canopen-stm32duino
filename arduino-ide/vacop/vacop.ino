@@ -159,8 +159,6 @@ void loop() {
     static uint32_t lastProcessTime = 0;
 
     if (canopen_1ms_tick) {
-
-        debug("paul est beau");
         canopen_1ms_tick = false;
 
         uint32_t now = millis();
