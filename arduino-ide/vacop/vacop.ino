@@ -80,7 +80,7 @@ void setup_hardware_timer()
 }
 
 void setup() {
-    delay(5000);
+    delay(3000);
     Serial.begin(115200);
 
     // --- Initialisation CANopenNode ---
@@ -108,7 +108,7 @@ void setup() {
     }
 
     debug("après init");
-    delay(5000);
+    delay(1000);
 
     // Init objets CANopen (PDO, SDO, NMT, etc.)itRa
     err = CO_CANopenInit(
@@ -131,21 +131,21 @@ void setup() {
     }
 
     debug("après Open_init");
-    delay(5000);
+    delay(1000);
 
 
 
     err = CO_CANopenInitPDO(CO, CO->em, OD, 0x01, &errInfo);
 
     debug("après InitPDO");
-    delay(5000);
+    delay(1000);
 
 
     // Exemple d’enregistrement d’un callback sur l’ID 0x180 (TPDO1 d’un autre noeud)
     CO_CANrxBufferInit(CO->CANmodule, 0, 0x180, 0x7FF, false, &latestMsg, myRxCallback);
 
     debug("après rxBufferInit");
-    delay(5000);
+    delay(1000);
 
 
 
@@ -159,6 +159,8 @@ void loop() {
     static uint32_t lastProcessTime = 0;
 
     if (canopen_1ms_tick) {
+
+        debug("paul est beau");
         canopen_1ms_tick = false;
 
         uint32_t now = millis();
