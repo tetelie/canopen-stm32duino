@@ -83,6 +83,8 @@ void setup() {
     delay(3000);
     Serial.begin(115200);
 
+    //CO->CANmodule->CANnormal = false;
+
     // --- Initialisation CANopenNode ---
     CO_config_t config;
     OD_INIT_CONFIG(config);
@@ -137,6 +139,15 @@ void setup() {
 
     err = CO_CANopenInitPDO(CO, CO->em, OD, 0x01, &errInfo);
 
+    if (err != CO_ERROR_NO) {
+        if (err == CO_ERROR_OD_PARAMETERS) {
+            debug("Erreur : OD invalide, entrée : ");
+        } else {
+            debug("Erreur CO_CANopenInit");
+        }
+        while (1);
+    }
+
     debug("après InitPDO");
     delay(1000);
 
@@ -147,8 +158,19 @@ void setup() {
     debug("après rxBufferInit");
     delay(1000);
 
+    
+    // Passage en mode normal CAN
+    CO->CANmodule->CANnormal = true;
+    CO_CANsetNormalMode(CO->CANmodule);
 
+    delay(2000);
 
+    if (CO->nodeIdUnconfigured) {
+        debug("Erreur : Node ID non initialisé !");
+    } else {
+        debug("CANopenNode - En fonctionnement !");
+    }
+    
     debug("CANopenNode prêt");
 
     // initialisation hardware timer for canopen process
