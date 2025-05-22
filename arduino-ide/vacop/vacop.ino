@@ -217,10 +217,11 @@ void loop() {
         if (reset != CO_RESET_NOT) {
             // Implémenter un redémarrage logiciel ici si besoin
         }
-    }
+
+
 
     // Traitement réception CAN brute (optionnel)
-    if (Can1.read(msg)) {
+    if (Can.read(msg)) {
         messagePending = true;
     }
     CO_CANinterruptRx(CO->CANmodule); // OK ici si tu as bien un message reçu
