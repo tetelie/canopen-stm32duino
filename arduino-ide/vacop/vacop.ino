@@ -199,23 +199,6 @@ void loop() {
             // Implémenter un redémarrage logiciel ici si besoin
         }
 
-        CAN_TX_msg.id = 0x100;  // ID du message CAN
-CAN_TX_msg.len = 5;      // La longueur du message (5 caractères pour "HELLO")
-
-// Conversion des caractères en ASCII
-CAN_TX_msg.buf[0] = 'H';
-CAN_TX_msg.buf[1] = 'E';
-CAN_TX_msg.buf[2] = 'L';
-CAN_TX_msg.buf[3] = 'L';
-CAN_TX_msg.buf[4] = 'O';
-
-// Envoi du message CAN
-Can.write(CAN_TX_msg);
-
-// Affichage dans le moniteur série
-Serial.println("Message envoyé: HELLO");
-    }
-
 
 
     // Traitement réception CAN brute (optionnel)
