@@ -13,13 +13,14 @@
 CO_NMT_control_t nmt_control = CO_NMT_STARTUP_TO_OPERATIONAL;    // il semblerait y avoir un problème à verifier lors des tests
 
 
-STM32_CAN Can1(CAN1, DEF); // Broches PA11/PA12 pour CAN1
+STM32_CAN Can(CAN1, DEF); // Broches PA11/PA12 pour CAN1
 CO_t *CO = NULL;           // Objet CANopen
 
 CAN_message_t latestMsg;
 volatile bool newMessage = false;
 bool messagePending = false;
 CAN_message_t msg;
+static CAN_message_t CAN_TX_msg;
 
 HardwareTimer timer(TIM4);              // TIM1 --> TIM4 https://github.com/stm32duino/Arduino_Core_STM32/wiki/HardwareTimer-library
 volatile bool canopen_1ms_tick = false;
@@ -103,7 +104,7 @@ void setup() {
     uint32_t errInfo = 0;
 
     // Init module CANopen avec STM32_CAN
-    CO_ReturnError_t err = CO_CANinit(CO, (void*)&Can1, 500000 /*bitrate*/);
+    CO_ReturnError_t err = CO_CANinit(CO, (void*)&Can, 500000 /*bitrate*/);
     if (err != CO_ERROR_NO) {
         debug("Erreur d'init CO_CANinit");
         while (1);
@@ -158,7 +159,7 @@ void setup() {
     debug("après rxBufferInit");
     delay(1000);
 
-    
+
     // Passage en mode normal CAN
     CO->CANmodule->CANnormal = true;
     CO_CANsetNormalMode(CO->CANmodule);
@@ -170,7 +171,7 @@ void setup() {
     } else {
         debug("CANopenNode - En fonctionnement !");
     }
-    
+
     debug("CANopenNode prêt");
 
     // initialisation hardware timer for canopen process
@@ -197,10 +198,28 @@ void loop() {
         if (reset != CO_RESET_NOT) {
             // Implémenter un redémarrage logiciel ici si besoin
         }
+
+        CAN_TX_msg.id = 0x100;  // ID du message CAN
+CAN_TX_msg.len = 5;      // La longueur du message (5 caractères pour "HELLO")
+
+// Conversion des caractères en ASCII
+CAN_TX_msg.buf[0] = 'H';
+CAN_TX_msg.buf[1] = 'E';
+CAN_TX_msg.buf[2] = 'L';
+CAN_TX_msg.buf[3] = 'L';
+CAN_TX_msg.buf[4] = 'O';
+
+// Envoi du message CAN
+Can.write(CAN_TX_msg);
+
+// Affichage dans le moniteur série
+Serial.println("Message envoyé: HELLO");
     }
 
+
+
     // Traitement réception CAN brute (optionnel)
-    if (Can1.read(msg)) {
+    if (Can.read(msg)) {
         messagePending = true;
     }
     CO_CANinterruptRx(CO->CANmodule); // OK ici si tu as bien un message reçu
