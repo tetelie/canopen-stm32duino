@@ -11,12 +11,12 @@
 
     File info:
         File Names:   OD.h; OD.c
-        Project File: project.xdd
+        Project File: DS301_profile.xpd
         File Version: 1
 
-        Created:      21/05/2025 15:27:45
+        Created:      23/11/2020 13:00:00
         Created By:   
-        Modified:     21/05/2025 15:41:30
+        Modified:     22/05/2025 10:09:20
         Modified By:  
 
     Device Info:
@@ -242,6 +242,7 @@ typedef struct {
         uint32_t COB_IDClientToServerRx;
         uint32_t COB_IDServerToClientTx;
     } x1200_SDOServerParameter;
+    uint32_t x6000_counter;
 } OD_RAM_t;
 
 #ifndef OD_ATTR_PERSIST_COMM
@@ -296,6 +297,7 @@ extern OD_ATTR_OD OD_t *OD;
 #define OD_ENTRY_H1A01 &OD->list[30]
 #define OD_ENTRY_H1A02 &OD->list[31]
 #define OD_ENTRY_H1A03 &OD->list[32]
+#define OD_ENTRY_H6000 &OD->list[33]
 
 
 /*******************************************************************************
@@ -334,6 +336,7 @@ extern OD_ATTR_OD OD_t *OD;
 #define OD_ENTRY_H1A01_TPDOMappingParameter &OD->list[30]
 #define OD_ENTRY_H1A02_TPDOMappingParameter &OD->list[31]
 #define OD_ENTRY_H1A03_TPDOMappingParameter &OD->list[32]
+#define OD_ENTRY_H6000_counter &OD->list[33]
 
 
 /*******************************************************************************
