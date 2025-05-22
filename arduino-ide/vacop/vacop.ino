@@ -83,7 +83,6 @@ void setup() {
     delay(3000);
     Serial.begin(115200);
 
-    //CO->CANmodule->CANnormal = false;
 
     // --- Initialisation CANopenNode ---
     CO_config_t config;
@@ -96,6 +95,9 @@ void setup() {
         while (1);
     }
 
+    CO->CANmodule->CANnormal = false;
+
+    CO_CANsetConfigurationMode((void*)&Can1);
     CO_CANmodule_disable(CO->CANmodule);
 
     debug("après co_news");
@@ -110,6 +112,24 @@ void setup() {
     }
 
     debug("après init");
+    delay(1000);
+
+
+    CO_LSS_address_t lssAddress = {.identity = {.vendorID = OD_PERSIST_COMM.x1018_identity.vendor_ID,
+                                                .productCode = OD_PERSIST_COMM.x1018_identity.productCode,
+                                                .revisionNumber = OD_PERSIST_COMM.x1018_identity.revisionNumber,
+                                                .serialNumber = OD_PERSIST_COMM.x1018_identity.serialNumber}};
+    
+    uint8_t nodeId = 0x01;
+    uint16_t bitrate = 500; // en kbps → 500 kbps
+
+    err = CO_LSSinit(CO, &lssAddress, &nodeId, &bitrate);
+    if (err != CO_ERROR_NO) {
+        debug("Error: LSS slave initialization failed");
+        while(1);
+    }
+
+    debug("après LSSinit");
     delay(1000);
 
     // Init objets CANopen (PDO, SDO, NMT, etc.)itRa
