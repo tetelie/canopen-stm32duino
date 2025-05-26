@@ -16,7 +16,7 @@
 
         Created:      23/11/2020 13:00:00
         Created By:   
-        Modified:     22/05/2025 10:09:20
+        Modified:     23/05/2025 15:54:13
         Modified By:  
 
     Device Info:
@@ -55,6 +55,7 @@
 #define OD_CNT_ARR_1010 4
 #define OD_CNT_ARR_1011 4
 #define OD_CNT_ARR_1016 8
+#define OD_CNT_ARR_2110 8
 
 
 /*******************************************************************************
@@ -242,7 +243,8 @@ typedef struct {
         uint32_t COB_IDClientToServerRx;
         uint32_t COB_IDServerToClientTx;
     } x1200_SDOServerParameter;
-    uint32_t x6000_counter;
+    uint8_t x2110_variableInt32_sub0;
+    uint32_t x2110_variableInt32[OD_CNT_ARR_2110];
 } OD_RAM_t;
 
 #ifndef OD_ATTR_PERSIST_COMM
@@ -297,7 +299,7 @@ extern OD_ATTR_OD OD_t *OD;
 #define OD_ENTRY_H1A01 &OD->list[30]
 #define OD_ENTRY_H1A02 &OD->list[31]
 #define OD_ENTRY_H1A03 &OD->list[32]
-#define OD_ENTRY_H6000 &OD->list[33]
+#define OD_ENTRY_H2110 &OD->list[33]
 
 
 /*******************************************************************************
@@ -336,7 +338,7 @@ extern OD_ATTR_OD OD_t *OD;
 #define OD_ENTRY_H1A01_TPDOMappingParameter &OD->list[30]
 #define OD_ENTRY_H1A02_TPDOMappingParameter &OD->list[31]
 #define OD_ENTRY_H1A03_TPDOMappingParameter &OD->list[32]
-#define OD_ENTRY_H6000_counter &OD->list[33]
+#define OD_ENTRY_H2110_variableInt32 &OD->list[33]
 
 
 /*******************************************************************************
