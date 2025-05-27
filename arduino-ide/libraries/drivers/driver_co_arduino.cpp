@@ -25,6 +25,10 @@
  * limitations under the License.
  */
 
+ #include <stdio.h>
+
+#define log_printf(macropar_message, ...) printf(macropar_message, ##__VA_ARGS__)
+
 
 #include "CANopen.h"
 
@@ -79,8 +83,10 @@ void CO_CANsetConfigurationMode(void* CANptr) {
 
 /******************************************************************************/
 void CO_CANsetNormalMode(CO_CANmodule_t *CANmodule) {
+
   CANmodule->CANnormal = true;
 }
+
 
 static CO_CANrx_t *rxArrayGlobal = NULL;
 static uint16_t rxSizeGlobal = 0;
@@ -94,7 +100,11 @@ CO_ReturnError_t CO_CANmodule_init(
   CO_CANtx_t txArray[],
   uint16_t txSize,
   uint16_t CANbitRate) {
+  log_printf("CO_CANmodule_init\n");
   if (!CANmodule || !rxArray || !txArray) return CO_ERROR_ILLEGAL_ARGUMENT;
+  log_printf("CO_CANmodule_init 2\n");
+  log_printf("Voic le petit baudrate: %d\n", CANbitRate);
+
 
   CANmodule->CANptr = CANptr;
   CANmodule->rxArray = rxArray;
@@ -119,9 +129,15 @@ CO_ReturnError_t CO_CANmodule_init(
     txArray[i].bufferFull = false;
   }
 
-  STM32_CAN *can = (STM32_CAN *)CANptr;
-  can->begin();
+
+
+  STM32_CAN *can = static_cast<STM32_CAN *>(CANptr);
+  can->begin();             // ces appels DOIVENT afficher tes prints
+  log_printf("Voic le petit baudrate: %d\n", CANbitRate);
+
   can->setBaudRate(CANbitRate);
+
+  log_printf("CO_CANmodule_init 3\n");
 
   return CO_ERROR_NO;
 }
@@ -132,7 +148,6 @@ void CO_CANmodule_disable(CO_CANmodule_t* CANmodule) {
     if (CANmodule != NULL && CANmodule->CANptr != NULL) {
 #ifdef CO_STM32_FDCAN_Driver
         HAL_FDCAN_Stop(&internalCAN->handle);
-
 #else
         HAL_CAN_Stop(&internalCAN->handle);
 #endif

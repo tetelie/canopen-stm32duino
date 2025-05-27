@@ -25,6 +25,10 @@
 
 #include "CANopen.h"
 
+#include <stdio.h>
+
+#define log_printf(macropar_message, ...) printf(macropar_message, ##__VA_ARGS__)
+
 /* Get values from CO_config_t or from single default OD.h ********************/
 #ifdef CO_MULTIPLE_OD
 #define CO_GET_CO(obj) co->obj
@@ -842,6 +846,9 @@ bool_t CO_isLSSslaveEnabled(CO_t *co) {
 
 /******************************************************************************/
 CO_ReturnError_t CO_CANinit(CO_t *co, void *CANptr, uint16_t bitRate) {
+
+  log_printf("Voic le petit baudratekcv,cxk,vkcx,vckv,: %d\n", bitRate);
+
     CO_ReturnError_t err;
 
     if (co == NULL) return CO_ERROR_ILLEGAL_ARGUMENT;

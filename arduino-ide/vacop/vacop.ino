@@ -11,7 +11,7 @@
 
 
 
-CO_NMT_control_t nmt_control = CO_NMT_STARTUP_TO_OPERATIONAL;  // il semblerait y avoir un problème à verifier lors des tests
+CO_NMT_control_t nmt_control = CO_NMT_STARTUP_TO_OPERATIONAL;
 
 
 STM32_CAN Can1(CAN1, DEF);  // Broches PA11/PA12 pour CAN1
@@ -60,10 +60,6 @@ void debug(T message, bool ln = true) {
   }
 }
 
-
-
-
-
 // === Callback appelée à la réception d’un message CANopen configuré ===
 void myRxCallback(void *object, void *msgPtr) {
   CAN_message_t *msg = (CAN_message_t *)msgPtr;
@@ -71,6 +67,7 @@ void myRxCallback(void *object, void *msgPtr) {
   newMessage = true;
 }
 
+// === enregistrement du timer hardware
 void setup_hardware_timer() {
   timer.setOverflow(1000, MICROSEC_FORMAT);  // 1ms
   timer.attachInterrupt([]() {
@@ -80,9 +77,10 @@ void setup_hardware_timer() {
 }
 
 void setup() {
-  delay(3000);
-  Serial.begin(115200);
+  delay(3000); // attente nécessaire pour afficher les premiers messages
+  Serial.begin(115200); // Moniteur série
 
+  /* chargement du dictionnaire d'objets */
   CO_config_t* config_ptr = NULL;
   // --- Initialisation CANopenNode ---
   CO_config_t config={0};
@@ -91,23 +89,28 @@ void setup() {
   config.CNT_LSS_SLV = 1;
   config.CNT_RPDO = 1;
   config_ptr = &config;
+  /* fin dictionnaire objets */
 
   debug("début initialisation");
+  /* allocation objets canopen */
   CO = CO_new(config_ptr, NULL);
   if (CO == NULL) {
     debug("Erreur d'allocation CO");
     while (1)
       ;
   }
+  /* fin allocation objets canopen */
 
   CO->CANmodule->CANnormal = false;
 
-  CO_CANsetConfigurationMode((void *)&Can1);
-  CO_CANmodule_disable(CO->CANmodule);
+  CO_CANsetConfigurationMode((void *)&Can1); // rattachement du bus CAN à canopen
+  CO_CANmodule_disable(CO->CANmodule);       // désactivation du module CAN
 
   debug("après co_news");
 
   uint32_t errInfo = 0;
+  uint16_t bitrate = 500000;  // en kbps → 500 kbps
+
 
   // Init module CANopen avec STM32_CAN
   CO_ReturnError_t err = CO_CANinit(CO, (void *)&Can1, 500 /*bitrate*/);
@@ -126,8 +129,7 @@ void setup() {
                                                 .revisionNumber = OD_PERSIST_COMM.x1018_identity.revisionNumber,
                                                 .serialNumber = OD_PERSIST_COMM.x1018_identity.serialNumber } };
 
-  uint8_t nodeId = 0x02;
-  uint16_t bitrate = 500;  // en kbps → 500 kbps
+  uint8_t nodeId = 0x02;   // identifiant noeud désiré
 
   err = CO_LSSinit(CO, &lssAddress, &nodeId, &bitrate);
   if (err != CO_ERROR_NO) {
@@ -151,7 +153,7 @@ void setup() {
     1000,         // SDO server timeout (en ms)
     500,          // SDO client timeout (en ms)
     false,        // SDO client block transfer désactivé
-    0x02,         // nodeId
+    nodeId,         // nodeId
     &errInfo      // erreur détaillée en cas d’échec
   );
   if (err != CO_ERROR_NO) {
@@ -163,8 +165,11 @@ void setup() {
   debug("après Open_init");
   delay(2000);
 
+  //sendNMTstartNode(CO->CANmodule, nodeId); test
 
+  delay(2000);
 
+  /* PDO start */
   err = CO_CANopenInitPDO(CO, CO->em, OD, 0x02, &errInfo);
 
   if (err != CO_ERROR_NO) {
@@ -176,25 +181,27 @@ void setup() {
     while (1)
       ;
   }
-
+  /* PDO end */
   debug("après InitPDO");
   delay(2000);
 
-
-  for (uint16_t id = 0x180; id <= 0x182; id++) {
-    CO_CANrxBufferInit(CO->CANmodule, id - 0x180, id, 0x7FF, false, &latestMsg, myRxCallback);
-    }
-
+  // Enregistrement du callback de recetpion
+  CO_CANrxBufferInit(CO->CANmodule, 0, 0x000, 0x000, false, NULL, myRxCallback);
   debug("après rxBufferInit");
   delay(1000);
-  
+
 
 
   // Passage en mode normal CAN
   CO->CANmodule->CANnormal = true;
   CO_CANsetNormalMode(CO->CANmodule);
 
+
+  //Can1.begin();
+  //Can1.setBaudRate(500000);
+
   delay(2000);
+
 
   if (CO->nodeIdUnconfigured) {
     debug("Erreur : Node ID non initialisé !");
@@ -204,15 +211,15 @@ void setup() {
 
   debug("CANopenNode prêt");
 
-  // initialisation hardware timer for canopen process
+  // initialisation du timer hardware
   setup_hardware_timer();
 }
 
 void loop() {
   static uint32_t lastProcessTime = 0;
 
-  if (canopen_1ms_tick) {
-    canopen_1ms_tick = false;
+  if (canopen_1ms_tick) { // ce flag est mis à vrai à chaque iteration du timer hardware
+    canopen_1ms_tick = false; // on met le flag directement à faux
 
     uint32_t now = millis();
     uint32_t diff = now - lastProcessTime;
@@ -221,10 +228,11 @@ void loop() {
     uint32_t timerNext_us = 0;
     CO_NMT_reset_cmd_t reset;
 
+    // Appel de toute les fonctions process
     reset = CO_process(CO, false, diff * 1000, &timerNext_us);
     CO_process_RPDO(CO, false, diff * 1000, &timerNext_us);
     CO_process_TPDO(CO, false, diff * 1000, &timerNext_us);
-    
+
 
     if (reset != CO_RESET_NOT) {
       // Implémenter un redémarrage logiciel ici si besoin
@@ -236,7 +244,7 @@ void loop() {
     if (Can1.read(msg)) {
       messagePending = true;
     }
-    CO_CANinterruptRx(CO->CANmodule);  // OK ici si tu as bien un message reçu
+    CO_CANinterruptRx(CO->CANmodule);  // OK ici message reçu
 
     if (newMessage) {
       newMessage = false;

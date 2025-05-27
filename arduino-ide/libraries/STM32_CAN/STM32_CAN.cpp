@@ -2,8 +2,12 @@
 
 #include "core_debug.h"
 
+#include <stdio.h>
+
+#define log_printf(macropar_message, ...) printf(macropar_message, ##__VA_ARGS__)
+
 #if defined(HAL_CEC_MODULE_ENABLED) && defined(STM32_CAN1_SHARED_WITH_CEC)
-/** Pointer to CEC_HandleTypeDef structure that contains 
+/** Pointer to CEC_HandleTypeDef structure that contains
  * the configuration information for the specified CEC.
  * Application have to declare them properly to be able to call
  * the HAL_CEC_IRQHandler().
@@ -326,25 +330,40 @@ void STM32_CAN::setAutoBusOffRecovery(bool enabled)
 // Init and start CAN
 void STM32_CAN::begin( bool retransmission ) {
 
+  log_printf("--- begin ---\n");
+
   // exit if CAN already is active
   if (_canIsActive) return;
+
+  log_printf("--- 2 ---\n");
+
 
   auto instance = getPeripheral();
   if(instance == NP)
   {
+    log_printf("--- 3 ---\n");
+
     //impossible pinconfig, done here
     return;
   }
   if(!allocatePeripheral(instance))
   {
+    log_printf("--- 4 ---\n");
+
     //peripheral already in use
     return;
   }
 
+  log_printf("--- 5 ---\n");
+
+
   _canIsActive = true;
 
   initializeBuffers();
-  
+
+  log_printf("--- 6 ---\n");
+
+
   /**
    * NOTE: enabling the internal pullup of RX pin
    * in case no external circuitry (CAN Transceiver) is connected this will ensure a valid recessive level.
@@ -353,7 +372,7 @@ void STM32_CAN::begin( bool retransmission ) {
    * This lets loopback only tests without external circuitry sill function.
    */
   uint32_t rx_func = pinmap_function(rx, PinMap_CAN_RD);
-  rx_func = (rx_func & ~(STM_PIN_PUPD_MASK << STM_PIN_PUPD_SHIFT)) 
+  rx_func = (rx_func & ~(STM_PIN_PUPD_MASK << STM_PIN_PUPD_SHIFT))
           | (GPIO_PULLUP << STM_PIN_PUPD_SHIFT);
   pin_function(rx, fixPinFunction(rx_func));
   if(tx != NC)
@@ -364,6 +383,8 @@ void STM32_CAN::begin( bool retransmission ) {
   // Configure CAN
   if (_can.handle.Instance == CAN1)
   {
+    log_printf("--- 7 ---\n");
+
     //CAN1
     __HAL_RCC_CAN1_CLK_ENABLE();
 
@@ -387,6 +408,8 @@ void STM32_CAN::begin( bool retransmission ) {
     #endif /** else defined(CAN1_IRQn_AIO) */
 
     _can.bus = 1;
+
+
   }
 #ifdef CAN2
   else if (_can.handle.Instance == CAN2)
@@ -424,11 +447,17 @@ void STM32_CAN::begin( bool retransmission ) {
 #endif
 
   setAutoRetransmission(retransmission);
-  
+
   filtersInitialized = false;
 
   //try to start in case baudrate was set earlier
+  log_printf("try to start in case baudrate was set earlier\n");
   setBaudRate(baudrate);
+
+  log_printf("--- end begin ---\n");
+
+
+
 }
 
 void STM32_CAN::end()
@@ -439,7 +468,7 @@ void STM32_CAN::end()
   }
 
   stop();
-  
+
   disableMBInterrupts();
 
   if (_can.handle.Instance == CAN1)
@@ -454,7 +483,7 @@ void STM32_CAN::end()
     if(canObj[CAN1_INDEX] == nullptr)
     {
       __HAL_RCC_CAN1_CLK_DISABLE();
-    } 
+    }
   }
 #endif
 #ifdef CAN3
@@ -478,26 +507,41 @@ void STM32_CAN::end()
 
 void STM32_CAN::setBaudRate(uint32_t baud)
 {
+
+  log_printf("--- set baudrate ---\n");
+  log_printf("%d",baud);
+
   baudrate = baud;
 
   if(!hasPeripheral())
   {
+
+    log_printf("--- baud 1 ---\n");
+
     return;
   }
 
   // Calculate and set baudrate
   if(!calculateBaudrate( baud ))
   {
+    log_printf("--- baud 2 ---\n");
+    // connard il va là
     return;
   }
+
 
   // (re)-start
   stop();
   start();
+
+  log_printf("--- STARTING  1 ---\n");
+
 }
 
 void STM32_CAN::start()
 {
+  log_printf("== CAN start 1 == \n");
+
   // Initializes CAN
   HAL_CAN_Init( &_can.handle );
 
@@ -513,6 +557,8 @@ void STM32_CAN::start()
   HAL_CAN_ActivateNotification( &_can.handle, CAN_IT_RX_FIFO0_MSG_PENDING);
   HAL_CAN_ActivateNotification( &_can.handle, CAN_IT_TX_MAILBOX_EMPTY);
   #endif
+
+  log_printf("== CAN start  end == \n");
 }
 
 void STM32_CAN::stop()
@@ -526,6 +572,8 @@ void STM32_CAN::stop()
 
   /** Calls Stop internally, clears all errors */
   HAL_CAN_DeInit( &_can.handle );
+
+
 }
 
 
@@ -689,7 +737,7 @@ bool STM32_CAN::setFilter(uint8_t bank_num, bool enabled, FILTER_ACTION action)
 
   /* Initialisation mode for the filter */
   SET_BIT(can_ip->FMR, CAN_FMR_FINIT);
-  
+
   /* Filter Deactivation */
   CLEAR_BIT(can_ip->FA1R, filternbrbitpos);
 
@@ -1106,12 +1154,22 @@ bool STM32_CAN::calculateBaudrate(int baud)
   uint8_t bs2;
   uint16_t prescaler;
 
+  baud = baud*1000;
+
+  log_printf("calculate baud: %d\n", baud);
+
   const uint32_t frequency = getCanPeripheralClock();
+
+  log_printf("fréquence: %d\n", frequency);
+
 
   if (frequency == 48000000) {
     if (lookupBaudrate(baud, BAUD_RATE_TABLE_48M)) return true;
+    log_printf("48 MHz\n");
   } else if (frequency == 45000000) {
     if (lookupBaudrate(baud, BAUD_RATE_TABLE_45M)) return true;
+    log_printf("45 MHz\n");
+
   }
 
   /* this loop seeks a precise baudrate match, with the sample point positioned
@@ -1168,7 +1226,7 @@ uint32_t STM32_CAN::fixPinFunction(uint32_t function)
     af = AFIO_CAN1_1;
   }
 
-  function &= ~(STM_PIN_AFNUM_MASK << STM_PIN_AFNUM_SHIFT); 
+  function &= ~(STM_PIN_AFNUM_MASK << STM_PIN_AFNUM_SHIFT);
   function |= ((af & STM_PIN_AFNUM_MASK) << STM_PIN_AFNUM_SHIFT);
   #endif
   return function;
@@ -1412,4 +1470,3 @@ extern "C" void CAN3_TX_IRQHandler(void)
 #endif
 
 #endif /* CAN1_IRQHandler_AIO */
-
