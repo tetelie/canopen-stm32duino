@@ -186,7 +186,7 @@ void setup() {
   delay(2000);
 
   // Enregistrement du callback de recetpion
-  CO_CANrxBufferInit(CO->CANmodule, 0, 0x000, 0x000, false, NULL, myRxCallback);
+  //CO_CANrxBufferInit(CO->CANmodule, 0, 0x000, 0x000, false, NULL, myRxCallback);
   debug("après rxBufferInit");
   delay(1000);
 

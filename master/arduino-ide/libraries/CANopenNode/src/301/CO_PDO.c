@@ -27,6 +27,10 @@
 
 #include "301/CO_PDO.h"
 
+#include <stdio.h>
+
+#define log_printf(macropar_message, ...) printf(macropar_message, ##__VA_ARGS__)
+
 #if (CO_CONFIG_PDO) & (CO_CONFIG_RPDO_ENABLE | CO_CONFIG_TPDO_ENABLE)
 
 #if (CO_CONFIG_PDO) & CO_CONFIG_FLAG_OD_DYNAMIC
@@ -468,6 +472,8 @@ static void CO_PDO_receive(void *object, void *msg) {
     uint8_t DLC = CO_CANrxMsg_readDLC(msg);
     uint8_t *data = CO_CANrxMsg_readData(msg);
     uint8_t err = RPDO->receiveError;
+
+    log_printf("J4AI RECU UN PDO\n");
 
     if (PDO->valid) {
         if (DLC >= PDO->dataLength) {

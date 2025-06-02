@@ -11,18 +11,18 @@
 
     File info:
         File Names:   OD.h; OD.c
-        Project File: DS301_profile.xpd
+        Project File: D.xdd
         File Version: 1
 
         Created:      23/11/2020 13:00:00
         Created By:   
-        Modified:     23/05/2025 15:54:13
-        Modified By:  
+        Modified:     28/05/2025 11:10:27
+        Modified By:  Tinhinane AIT-MESSAOUD
 
     Device Info:
         Vendor Name:  
         Vendor ID:    
-        Product Name: New Product
+        Product Name: MASTER_OD
         Product ID:   
 
         Description:  
@@ -55,7 +55,7 @@
 #define OD_CNT_ARR_1010 4
 #define OD_CNT_ARR_1011 4
 #define OD_CNT_ARR_1016 8
-#define OD_CNT_ARR_2110 8
+#define OD_CNT_ARR_2110 1
 
 
 /*******************************************************************************
@@ -243,8 +243,8 @@ typedef struct {
         uint32_t COB_IDClientToServerRx;
         uint32_t COB_IDServerToClientTx;
     } x1200_SDOServerParameter;
-    uint8_t x2110_variableInt32_sub0;
-    uint32_t x2110_variableInt32[OD_CNT_ARR_2110];
+    uint8_t x2110_counter_sub0;
+    uint32_t x2110_counter[OD_CNT_ARR_2110];
 } OD_RAM_t;
 
 #ifndef OD_ATTR_PERSIST_COMM
@@ -338,7 +338,7 @@ extern OD_ATTR_OD OD_t *OD;
 #define OD_ENTRY_H1A01_TPDOMappingParameter &OD->list[30]
 #define OD_ENTRY_H1A02_TPDOMappingParameter &OD->list[31]
 #define OD_ENTRY_H1A03_TPDOMappingParameter &OD->list[32]
-#define OD_ENTRY_H2110_variableInt32 &OD->list[33]
+#define OD_ENTRY_H2110_counter &OD->list[33]
 
 
 /*******************************************************************************
