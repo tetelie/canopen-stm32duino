@@ -1,0 +1,34 @@
+name: Compile Examples for STM32
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: false
+    
+      matrix:
+        board:
+          - fqbn: "Nucleo_144"
+          - fqbn: "GenF0:pnum=GENERIC_F042F6PX"
+          - fqbn: "GenF1:pnum=GENERIC_F103C8TX"
+          - fqbn: "GenF3:pnum=GENERIC_F303RETX"
+          - fqbn: "GenF4:pnum=GENERIC_F412RETX"
+          - fqbn: "GenF4:pnum=GENERIC_F407VETX"
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3    
+      - name: Compile STM32 example
+        uses: arduino/compile-sketches@main
+        with:
+          platforms: |
+            - name: "STMicroelectronics:stm32"
+              source-url: https://github.com/stm32duino/BoardManagerFiles/raw/main/package_stmicroelectronics_index.json
+          fqbn: STMicroelectronics:stm32:${{ matrix.board.fqbn }}
+          libraries: |
+            - source-path: ./ 
