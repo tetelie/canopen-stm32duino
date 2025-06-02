@@ -14,9 +14,9 @@
         Project File: project.xdd
         File Version: 1
 
-        Created:      28/05/2025 12:27:27
-        Created By:   Iban
-        Modified:     28/05/2025 12:42:51
+        Created:      02/06/2025 14:05:44
+        Created By:   
+        Modified:     02/06/2025 14:08:23
         Modified By:  
 
     Device Info:
@@ -243,8 +243,8 @@ typedef struct {
         uint32_t COB_IDClientToServerRx;
         uint32_t COB_IDServerToClientTx;
     } x1200_SDOServerParameter;
-    uint8_t x2110_chocolatine_sub0;
-    uint32_t x2110_chocolatine[OD_CNT_ARR_2110];
+    uint8_t x2110_newObject_sub0;
+    uint32_t x2110_newObject[OD_CNT_ARR_2110];
 } OD_RAM_t;
 
 #ifndef OD_ATTR_PERSIST_COMM
@@ -338,7 +338,7 @@ extern OD_ATTR_OD OD_t *OD;
 #define OD_ENTRY_H1A01_TPDOMappingParameter &OD->list[30]
 #define OD_ENTRY_H1A02_TPDOMappingParameter &OD->list[31]
 #define OD_ENTRY_H1A03_TPDOMappingParameter &OD->list[32]
-#define OD_ENTRY_H2110_chocolatine &OD->list[33]
+#define OD_ENTRY_H2110_newObject &OD->list[33]
 
 
 /*******************************************************************************

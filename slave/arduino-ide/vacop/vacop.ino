@@ -80,6 +80,8 @@ void setup() {
   delay(3000); // attente nécessaire pour afficher les premiers messages
   Serial.begin(115200); // Moniteur série
 
+  analogReadResolution(12);
+
   /* chargement du dictionnaire d'objets */
   CO_config_t* config_ptr = NULL;
   // --- Initialisation CANopenNode ---
@@ -109,6 +111,7 @@ void setup() {
   debug("après co_news");
 
   uint32_t errInfo = 0;
+  
   uint16_t bitrate = 500000;  // en kbps → 500 kbps
 
 
@@ -218,6 +221,9 @@ void setup() {
 void loop() {
   static uint32_t lastProcessTime = 0;
 
+  int value = analogRead(PA0);
+  Serial.println(value);
+
   if (canopen_1ms_tick) { // ce flag est mis à vrai à chaque iteration du timer hardware
     canopen_1ms_tick = false; // on met le flag directement à faux
 
@@ -227,6 +233,10 @@ void loop() {
 
     uint32_t timerNext_us = 0;
     CO_NMT_reset_cmd_t reset;
+
+
+    OD_RAM.x2110_newObject[0] = value;
+
 
     // Appel de toute les fonctions process
     reset = CO_process(CO, false, diff * 1000, &timerNext_us);
