@@ -24,7 +24,7 @@ CAN_message_t msg;
 
 HardwareTimer timer(TIM4);  // TIM1 --> TIM4 https://github.com/stm32duino/Arduino_Core_STM32/wiki/HardwareTimer-library
 volatile bool canopen_1ms_tick = false;
-
+volatile int canopen_5000ms_tick = false;
 
 /*
   debug function
@@ -37,6 +37,17 @@ void debug(bool ln = true) {
   if (DEBUG) {
     if (ln) Serial.println();
   }
+}
+
+void print_delay(int ms, int point=10, char * c="⏳")
+{
+  int part = (int) ms / 10;
+  for(int i = 0; i < point; i++)
+  {
+    Serial.print(c);
+    delay(part);
+  }
+  Serial.println("");
 }
 
 // Pour les types numériques avec base
@@ -72,12 +83,14 @@ void setup_hardware_timer() {
   timer.setOverflow(1000, MICROSEC_FORMAT);  // 1ms
   timer.attachInterrupt([]() {
     canopen_1ms_tick = true;
+    canopen_5000ms_tick++;
+    //Serial.println("tick");
   });
   timer.resume();
 }
 
 void setup() {
-  delay(3000); // attente nécessaire pour afficher les premiers messages
+  print_delay(3000); // attente nécessaire pour afficher les premiers messages
   Serial.begin(115200); // Moniteur série
 
   /* chargement du dictionnaire d'objets */
@@ -121,7 +134,7 @@ void setup() {
   }
 
   debug("après init");
-  delay(1000);
+  print_delay(1000);
 
 
   CO_LSS_address_t lssAddress = { .identity = { .vendorID = OD_PERSIST_COMM.x1018_identity.vendor_ID,
@@ -139,7 +152,7 @@ void setup() {
   }
 
   debug("après LSSinit");
-  delay(2000);
+  print_delay(2000);
 
   // Init objets CANopen (PDO, SDO, NMT, etc.)itRa
   err = CO_CANopenInit(
@@ -163,11 +176,11 @@ void setup() {
   }
 
   debug("après Open_init");
-  delay(2000);
+  print_delay(2000);
 
   //sendNMTstartNode(CO->CANmodule, nodeId); test
 
-  delay(2000);
+  print_delay(2000);
 
   /* PDO start */
   err = CO_CANopenInitPDO(CO, CO->em, OD, 0x02, &errInfo);
@@ -183,12 +196,12 @@ void setup() {
   }
   /* PDO end */
   debug("après InitPDO");
-  delay(2000);
+  print_delay(2000);
 
   // Enregistrement du callback de recetpion
   //CO_CANrxBufferInit(CO->CANmodule, 0, 0x000, 0x000, false, NULL, myRxCallback);
   debug("après rxBufferInit");
-  delay(1000);
+  print_delay(1000);
 
 
 
@@ -200,7 +213,7 @@ void setup() {
   //Can1.begin();
   //Can1.setBaudRate(500000);
 
-  delay(2000);
+  print_delay(2000);
 
 
   if (CO->nodeIdUnconfigured) {
@@ -211,16 +224,24 @@ void setup() {
 
   debug("CANopenNode prêt");
 
+  print_delay(2000);
+
   // initialisation du timer hardware
   setup_hardware_timer();
+
+  print_delay(5000);
 }
 
 void loop() {
+
+  //Serial.println("salut");
+
   static uint32_t lastProcessTime = 0;
 
   if (canopen_1ms_tick) { // ce flag est mis à vrai à chaque iteration du timer hardware
     canopen_1ms_tick = false; // on met le flag directement à faux
 
+    //Serial.println("salut");
     uint32_t now = millis();
     uint32_t diff = now - lastProcessTime;
     lastProcessTime = now;
@@ -236,28 +257,36 @@ void loop() {
 
     if (reset != CO_RESET_NOT) {
       // Implémenter un redémarrage logiciel ici si besoin
+      Serial.println("RESET");
     }
 
 
 
     // Traitement réception CAN brute (optionnel)
     if (Can1.read(msg)) {
-      messagePending = true;
-    }
-    CO_CANinterruptRx(CO->CANmodule);  // OK ici message reçu
+  messagePending = true;
+  Serial.println("Réception CAN brute :");
 
-    if (newMessage) {
-      newMessage = false;
-      debug("Reçu ID: 0x", false);
-      debug(latestMsg.id, HEX, false);
-      debug(" DLC: ", false);
-      debug(latestMsg.len, false);
-      debug(" Data: ", false);
-      for (uint8_t i = 0; i < latestMsg.len; i++) {
-        debug(latestMsg.buf[i], HEX, false);
-        debug();
-      }
-      debug();
-    }
+  // Afficher les données du message CAN de manière lisible
+  Serial.print("ID: 0x");
+  Serial.println(msg.id, HEX);
+  Serial.print("DLC: ");
+  Serial.println(msg.len);
+  Serial.print("Data: ");
+  for (int i = 0; i < msg.len; i++) {
+    Serial.print("0x");
+    if (msg.buf[i] < 0x10) Serial.print("0"); // Padding pour affichage propre
+    Serial.print(msg.buf[i], HEX);
+    Serial.print(" ");
+  }
+  Serial.println();
+}
+
+    CO_CANinterruptRx(CO->CANmodule);  // OK ici message reçu
+  }
+  if(canopen_5000ms_tick == 5000)
+  {
+    canopen_5000ms_tick = 0;
+    Serial.println("Hardware Timer Alive ! (5000ms)");
   }
 }
