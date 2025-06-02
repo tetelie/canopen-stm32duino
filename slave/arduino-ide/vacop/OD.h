@@ -11,18 +11,18 @@
 
     File info:
         File Names:   OD.h; OD.c
-        Project File: DS301_profile.xdd
+        Project File: project.xdd
         File Version: 1
 
-        Created:      23/11/2020 13:00:00
-        Created By:   
-        Modified:     27/05/2025 15:43:17
-        Modified By:  Tinhinane AIT-MESSAOUD
+        Created:      28/05/2025 12:27:27
+        Created By:   Iban
+        Modified:     28/05/2025 12:42:51
+        Modified By:  
 
     Device Info:
         Vendor Name:  
         Vendor ID:    
-        Product Name: SLAVE_OD
+        Product Name: Slave
         Product ID:   
 
         Description:  
@@ -243,8 +243,8 @@ typedef struct {
         uint32_t COB_IDClientToServerRx;
         uint32_t COB_IDServerToClientTx;
     } x1200_SDOServerParameter;
-    uint8_t x2110_counter_sub0;
-    uint32_t x2110_counter[OD_CNT_ARR_2110];
+    uint8_t x2110_chocolatine_sub0;
+    uint32_t x2110_chocolatine[OD_CNT_ARR_2110];
 } OD_RAM_t;
 
 #ifndef OD_ATTR_PERSIST_COMM
@@ -338,7 +338,7 @@ extern OD_ATTR_OD OD_t *OD;
 #define OD_ENTRY_H1A01_TPDOMappingParameter &OD->list[30]
 #define OD_ENTRY_H1A02_TPDOMappingParameter &OD->list[31]
 #define OD_ENTRY_H1A03_TPDOMappingParameter &OD->list[32]
-#define OD_ENTRY_H2110_counter &OD->list[33]
+#define OD_ENTRY_H2110_chocolatine &OD->list[33]
 
 
 /*******************************************************************************
