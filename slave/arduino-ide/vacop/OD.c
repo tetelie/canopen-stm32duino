@@ -123,10 +123,10 @@ OD_ATTR_PERSIST_COMM OD_PERSIST_COMM_t OD_PERSIST_COMM = {
     },
     .x1801_TPDOCommunicationParameter = {
         .highestSub_indexSupported = 0x06,
-        .COB_IDUsedByTPDO = 0x00000280,
+        .COB_IDUsedByTPDO = 0x00000180,
         .transmissionType = 0xFE,
         .inhibitTime = 0x0000,
-        .eventTimer = 0x0000,
+        .eventTimer = 0x1388,
         .SYNCStartValue = 0x00
     },
     .x1802_TPDOCommunicationParameter = {
@@ -202,8 +202,8 @@ OD_ATTR_RAM OD_RAM_t OD_RAM = {
         .COB_IDClientToServerRx = 0x00000600,
         .COB_IDServerToClientTx = 0x00000580
     },
-    .x2110_chocolatine_sub0 = 0x01,
-    .x2110_chocolatine = {0x00001E84}
+    .x2110_newObject_sub0 = 0x01,
+    .x2110_newObject = {0x000011F6}
 };
 
 
@@ -245,7 +245,7 @@ typedef struct {
     OD_obj_record_t o_1A01_TPDOMappingParameter[9];
     OD_obj_record_t o_1A02_TPDOMappingParameter[9];
     OD_obj_record_t o_1A03_TPDOMappingParameter[9];
-    OD_obj_array_t o_2110_chocolatine;
+    OD_obj_array_t o_2110_newObject;
 } ODObjs_t;
 
 static CO_PROGMEM ODObjs_t ODObjs = {
@@ -1113,10 +1113,10 @@ static CO_PROGMEM ODObjs_t ODObjs = {
             .dataLength = 4
         }
     },
-    .o_2110_chocolatine = {
-        .dataOrig0 = &OD_RAM.x2110_chocolatine_sub0,
-        .dataOrig = &OD_RAM.x2110_chocolatine[0],
-        .attribute0 = ODA_SDO_R | ODA_TRPDO,
+    .o_2110_newObject = {
+        .dataOrig0 = &OD_RAM.x2110_newObject_sub0,
+        .dataOrig = &OD_RAM.x2110_newObject[0],
+        .attribute0 = ODA_SDO_R,
         .attribute = ODA_SDO_RW | ODA_TRPDO | ODA_MB,
         .dataElementLength = 4,
         .dataElementSizeof = sizeof(uint32_t)
@@ -1161,7 +1161,7 @@ static OD_ATTR_OD OD_entry_t ODList[] = {
     {0x1A01, 0x09, ODT_REC, &ODObjs.o_1A01_TPDOMappingParameter, NULL},
     {0x1A02, 0x09, ODT_REC, &ODObjs.o_1A02_TPDOMappingParameter, NULL},
     {0x1A03, 0x09, ODT_REC, &ODObjs.o_1A03_TPDOMappingParameter, NULL},
-    {0x2110, 0x02, ODT_ARR, &ODObjs.o_2110_chocolatine, NULL},
+    {0x2110, 0x02, ODT_ARR, &ODObjs.o_2110_newObject, NULL},
     {0x0000, 0x00, 0, NULL, NULL}
 };
 
