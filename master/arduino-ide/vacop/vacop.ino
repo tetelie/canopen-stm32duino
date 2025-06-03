@@ -280,6 +280,16 @@ void loop() {
     Serial.print(" ");
   }
   Serial.println();
+
+  uint16_t potValue = (msg.buf[1] << 8) | msg.buf[0];
+potValue &= 0x0FFF;  // Masque pour garder les 12 bits
+
+Serial.print("Potentiomètre (12 bits) : ");
+Serial.print(potValue);
+Serial.print(" / ");
+Serial.println(4095);  // Valeur maximale sur 12 bits
+
+
 }
 
     CO_CANinterruptRx(CO->CANmodule);  // OK ici message reçu
