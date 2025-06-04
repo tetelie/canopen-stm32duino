@@ -69,7 +69,7 @@ class PotentiometerGUI(QWidget):
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.read_serial)
-        self.timer.start(200)  # Toutes les 200 ms
+        self.timer.start(50)  # Toutes les 200 ms
 
         self.last_time = time.time()  # Pour debug vitesse
 
