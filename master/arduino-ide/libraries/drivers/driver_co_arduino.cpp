@@ -135,7 +135,7 @@ CO_ReturnError_t CO_CANmodule_init(
   can->begin();             // ces appels DOIVENT afficher tes prints
   log_printf("Voic le petit baudrate: %d\n", CANbitRate);
 
-  can->setBaudRate(CANbitRate);
+  can->setBaudRate(CANbitRate*1000);
 
   log_printf("CO_CANmodule_init 3\n");
 

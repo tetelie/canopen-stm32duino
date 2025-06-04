@@ -1154,7 +1154,7 @@ bool STM32_CAN::calculateBaudrate(int baud)
   uint8_t bs2;
   uint16_t prescaler;
 
-  baud = baud*1000;
+  baud = baud;
 
   log_printf("calculate baud: %d\n", baud);
 
