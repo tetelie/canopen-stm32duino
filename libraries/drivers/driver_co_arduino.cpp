@@ -38,7 +38,7 @@
 
 #include "CO_app_STM32.h"
 
-extern CAN_message_t msg;
+//extern CAN_message_t msg;
 extern bool messagePending;
 
 
@@ -361,7 +361,7 @@ void CO_CANmodule_process(CO_CANmodule_t* CANmodule) {
 }
 
 /******************************************************************************/
-void CO_CANinterruptRx(CO_CANmodule_t *CANmodule) {
+void CO_CANinterruptRx(CO_CANmodule_t *CANmodule, CAN_message_t msg) {
   if (!messagePending) return;
 
   uint32_t ident = msg.id & 0x7FF;
@@ -385,6 +385,7 @@ void CO_CANinterruptRx(CO_CANmodule_t *CANmodule) {
 
 // ---------------- SDO client helpers ----------------
 
+
 /*
 
 CO_SDO_abortCode_t read_SDO(CO_SDOclient_t *SDO_C, uint8_t nodeId, uint16_t index, uint8_t subIndex, uint8_t *buf, size_t bufSize, size_t *readSize) {
@@ -399,7 +400,7 @@ CO_SDO_abortCode_t read_SDO(CO_SDOclient_t *SDO_C, uint8_t nodeId, uint16_t inde
 
   do {
     uint32_t time_us = 1000;
-    ret = CO_SDOclientUpload(time_us, false, &abort, NULL, NULL, NULL);
+    ret = CO_SDOclientUpload(SDO_C, time_us, false, &abort, NULL, NULL, NULL);
   } while (ret > 0);
 
   *readSize = CO_SDOclientUploadBufRead(SDO_C, buf, bufSize);
@@ -420,7 +421,7 @@ CO_SDO_abortCode_t write_SDO(CO_SDOclient_t *SDO_C, uint8_t nodeId, uint16_t ind
 
   do {
     uint32_t time_us = 1000;
-    ret = CO_SDOclientDownload(time_us, false, false, &abort, NULL, NULL);
+    ret = CO_SDOclientDownload(SDO_C, time_us, false, false, &abort, NULL, NULL);
   } while (ret > 0);
 
   return abort;
