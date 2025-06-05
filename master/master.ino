@@ -73,9 +73,13 @@ void debug(T message, bool ln = true) {
 
 // === Callback appelée à la réception d’un message CANopen configuré ===
 void myRxCallback(void *object, void *msgPtr) {
+
+  debug("ON ERNTRE DANS LE CALLBACK");
   CAN_message_t *msg = (CAN_message_t *)msgPtr;
   latestMsg = *msg;
   newMessage = true;
+
+
 }
 
 // === enregistrement du timer hardware
@@ -115,6 +119,9 @@ void setup() {
   /* fin allocation objets canopen */
 
   CO->CANmodule->CANnormal = false;
+
+  CO_CANrxBufferInit(CO->CANmodule, 0, 0x60, 0x7FF, false, NULL, myRxCallback);
+
 
   CO_CANsetConfigurationMode((void *)&Can1); // rattachement du bus CAN à canopen
   CO_CANmodule_disable(CO->CANmodule);       // désactivation du module CAN
@@ -198,8 +205,6 @@ void setup() {
   debug("après InitPDO");
   print_delay(2000);
 
-  // Enregistrement du callback de recetpion
-  //CO_CANrxBufferInit(CO->CANmodule, 0, 0x000, 0x000, false, NULL, myRxCallback);
   debug("après rxBufferInit");
   print_delay(1000);
 
@@ -264,6 +269,7 @@ void loop() {
 
     // Traitement réception CAN brute (optionnel)
     if (Can1.read(msg)) {
+          //CO_CANinterruptRx(CO->CANmodule);  // OK ici message reçu
   messagePending = true;
   Serial.println("Réception CAN brute :");
 
@@ -292,7 +298,12 @@ Serial.println(4095);  // Valeur maximale sur 12 bits
 
 }
 
-    CO_CANinterruptRx(CO->CANmodule);  // OK ici message reçu
+    if(newMessage)
+    {
+      newMessage=false;
+      debug("YA UN NOUVEAU MESSAGE PUTAING DE MERDE QUOI U?NE FOIS");
+    }
+
   }
   if(canopen_5000ms_tick == 5000)
   {
