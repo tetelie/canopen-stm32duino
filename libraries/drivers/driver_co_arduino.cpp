@@ -38,7 +38,7 @@
 
 #include "CO_app_STM32.h"
 
-//extern CAN_message_t msg;
+extern CAN_message_t msg;
 extern bool messagePending;
 
 
@@ -218,13 +218,7 @@ CO_ReturnError_t CO_CANsend(CO_CANmodule_t *CANmodule, CO_CANtx_t *buffer) {
   }
 
   CAN_message_t msg;
-  msg.id = buffer->ident; //>> 2;
-
-
-  // 0001 1000 0000
-  // 0000 0011 0000
-
-
+  msg.id = buffer->ident;// >> 2;
   msg.len = buffer->DLC;
   memcpy(msg.buf, buffer->data, msg.len);
 
@@ -361,7 +355,7 @@ void CO_CANmodule_process(CO_CANmodule_t* CANmodule) {
 }
 
 /******************************************************************************/
-void CO_CANinterruptRx(CO_CANmodule_t *CANmodule, CAN_message_t msg) {
+void CO_CANinterruptRx(CO_CANmodule_t *CANmodule) {
   if (!messagePending) return;
 
   uint32_t ident = msg.id & 0x7FF;
