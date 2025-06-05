@@ -7,10 +7,13 @@
 - **slave/** : Bluepill implementation for slave
 
 ### Project Subject
-![Subject](https://github.com/tetelie/VACOP/blob/main/doc/sujet.pdf)
-
+<a href="https://github.com/tetelie/VACOP/blob/main/doc/sujet.pdf">[PDF] Subject</a>
 ### Project Wiring
-![Wiring](https://github.com/tetelie/VACOP/blob/main/doc/schema_systeme_can_raspberry.jpg)  
+<p align="center">
+  <img src="https://github.com/tetelie/VACOP/blob/main/doc/schema_systeme_can_raspberry.jpg" alt="schema_systeme_can_raspberry" width="500"/>
+</p>
 
 ### Project Settings
-![Board](https://github.com/tetelie/canopen-stm32duino/blob/main/doc/board.png)
+<p align="center">
+  <img src="https://github.com/tetelie/canopen-stm32duino/blob/main/doc/board.png" alt="board" width="250"/>
+</p>
