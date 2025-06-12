@@ -71,17 +71,6 @@ void debug(T message, bool ln = true) {
   }
 }
 
-// === Callback appelée à la réception d’un message CANopen configuré ===
-void myRxCallback(void *object, void *msgPtr) {
-
-  debug("ON ERNTRE DANS LE CALLBACK");
-  CAN_message_t *msg = (CAN_message_t *)msgPtr;
-  latestMsg = *msg;
-  newMessage = true;
-
-
-}
-
 // === enregistrement du timer hardware
 void setup_hardware_timer() {
   timer.setOverflow(1000, MICROSEC_FORMAT);  // 1ms
@@ -97,6 +86,13 @@ void setup() {
   print_delay(3000); // attente nécessaire pour afficher les premiers messages
   Serial.begin(115200); // Moniteur série
 
+  /*--------------------------------------------
+      Variables
+    --------------------------------------------*/
+  uint32_t errInfo = 0;
+  uint16_t bitrate = 500000;  // en kbps → 500 kbps
+  uint8_t nodeId = 0x01;   // identifiant noeud désiré
+
   /* chargement du dictionnaire d'objets */
   CO_config_t* config_ptr = NULL;
   // --- Initialisation CANopenNode ---
@@ -109,6 +105,10 @@ void setup() {
   /* fin dictionnaire objets */
 
   debug("début initialisation");
+
+  /*--------------------------------------------
+      Création des objets CANopen
+    --------------------------------------------*/
   /* allocation objets canopen */
   CO = CO_new(config_ptr, NULL);
   if (CO == NULL) {
@@ -118,20 +118,22 @@ void setup() {
   }
   /* fin allocation objets canopen */
 
+
+  /*--------------------------------------------
+      Mise en configuration du module CAN
+    --------------------------------------------*/
   CO->CANmodule->CANnormal = false;
-
-  CO_CANrxBufferInit(CO->CANmodule, 0, 0x60, 0x7FF, false, NULL, myRxCallback);
-
-
   CO_CANsetConfigurationMode((void *)&Can1); // rattachement du bus CAN à canopen
   CO_CANmodule_disable(CO->CANmodule);       // désactivation du module CAN
 
   debug("après co_news");
 
-  uint32_t errInfo = 0;
-  uint16_t bitrate = 500000;  // en kbps → 500 kbps
 
 
+
+  /*--------------------------------------------
+      Initialisation du module CAN
+    --------------------------------------------*/
   // Init module CANopen avec STM32_CAN
   CO_ReturnError_t err = CO_CANinit(CO, (void *)&Can1, 500 /*bitrate*/);
   if (err != CO_ERROR_NO) {
@@ -144,12 +146,16 @@ void setup() {
   print_delay(1000);
 
 
+
+
+  /*--------------------------------------------
+      Initialisation de LSS
+    --------------------------------------------*/
   CO_LSS_address_t lssAddress = { .identity = { .vendorID = OD_PERSIST_COMM.x1018_identity.vendor_ID,
                                                 .productCode = OD_PERSIST_COMM.x1018_identity.productCode,
                                                 .revisionNumber = OD_PERSIST_COMM.x1018_identity.revisionNumber,
                                                 .serialNumber = OD_PERSIST_COMM.x1018_identity.serialNumber } };
 
-  uint8_t nodeId = 0x02;   // identifiant noeud désiré
 
   err = CO_LSSinit(CO, &lssAddress, &nodeId, &bitrate);
   if (err != CO_ERROR_NO) {
@@ -161,6 +167,9 @@ void setup() {
   debug("après LSSinit");
   print_delay(2000);
 
+  /*--------------------------------------------
+      Initialisation du protocole CANopen principal
+    --------------------------------------------*/
   // Init objets CANopen (PDO, SDO, NMT, etc.)itRa
   err = CO_CANopenInit(
     CO,           // pointeur CO principal
@@ -189,8 +198,11 @@ void setup() {
 
   print_delay(2000);
 
+  /*--------------------------------------------
+      Initialisation des PDOs
+    --------------------------------------------*/
   /* PDO start */
-  err = CO_CANopenInitPDO(CO, CO->em, OD, 0x02, &errInfo);
+  err = CO_CANopenInitPDO(CO, CO->em, OD, nodeId, &errInfo);
 
   if (err != CO_ERROR_NO) {
     if (err == CO_ERROR_OD_PARAMETERS) {
@@ -205,11 +217,16 @@ void setup() {
   debug("après InitPDO");
   print_delay(2000);
 
-  debug("après rxBufferInit");
-  print_delay(1000);
+  /*--------------------------------------------
+      Initialisation du Timer Hardware (1ms)
+    --------------------------------------------*/
+  // initialisation du timer hardware
+  setup_hardware_timer();
 
 
-
+  /*--------------------------------------------
+      Activation du mode CAN "normal"
+    --------------------------------------------*/
   // Passage en mode normal CAN
   CO->CANmodule->CANnormal = true;
   CO_CANsetNormalMode(CO->CANmodule);
@@ -226,88 +243,75 @@ void setup() {
   } else {
     debug("CANopenNode - En fonctionnement !");
   }
-
+  /*err = CO_CANrxBufferInit(CO->CANmodule, 33, 0x180, 0x7FF, false, NULL, myRxCallback);
+  if (err != CO_ERROR_NO) {
+      Serial.printf("Erreur initialisation buffer CAN RX : %d\n", err);
+  }*/
   debug("CANopenNode prêt");
 
   print_delay(2000);
 
-  // initialisation du timer hardware
-  setup_hardware_timer();
+  //Can1.setCallback(CAN1_RX0_IRQHandler);
 
   print_delay(5000);
 }
 
+void CAN1_RX0_IRQHandler(void){
+  CO_CANinterruptRx(CO->CANmodule);
+}
+
 void loop() {
+  static uint32_t lastTimeMain = 0;
+  uint32_t now = millis();
+  uint32_t diffMain = now - lastTimeMain;
 
-  //Serial.println("salut");
+  // -- Boucle principale, exécution toutes les ~5ms --
+  if (diffMain > 5) {
+    lastTimeMain = now;
 
-  static uint32_t lastProcessTime = 0;
+    uint32_t timerNext_us = 0;
+    CO_NMT_reset_cmd_t reset = CO_process(CO, false, diffMain * 1000, &timerNext_us);
+    
+    // Traitement réception CAN brute (optionnel)
+    if (Can1.read(msg)) {
+      CO_CANinterruptRx(CO->CANmodule);  // OK ici message reçu
+      messagePending = true;
+      Serial.println("Réception CAN brute :");
+    }
 
-  if (canopen_1ms_tick) { // ce flag est mis à vrai à chaque iteration du timer hardware
-    canopen_1ms_tick = false; // on met le flag directement à faux
+    if (reset != CO_RESET_NOT) {
+      Serial.println("RESET demandé !");
+      // Implémenter un redémarrage ou une réinit si besoin
+    }
+  }
 
-    //Serial.println("salut");
+  // -- Traitement cyclique toutes les 1ms via le flag timer --
+  if (canopen_1ms_tick) {
+    canopen_1ms_tick = false;
+
+    static uint32_t lastProcessTime = 0;
     uint32_t now = millis();
     uint32_t diff = now - lastProcessTime;
     lastProcessTime = now;
 
     uint32_t timerNext_us = 0;
-    CO_NMT_reset_cmd_t reset;
 
-    // Appel de toute les fonctions process
-    reset = CO_process(CO, false, diff * 1000, &timerNext_us);
-    CO_process_RPDO(CO, false, diff * 1000, &timerNext_us);
-    CO_process_TPDO(CO, false, diff * 1000, &timerNext_us);
+    // Appels cycliques CANopenNode
+    bool_t syncWas = CO_process_SYNC(CO, diff * 1000, &timerNext_us);
+    CO_process_RPDO(CO, syncWas, diff * 1000, &timerNext_us);
+    CO_process_TPDO(CO, syncWas, diff * 1000, &timerNext_us);
 
-
-    if (reset != CO_RESET_NOT) {
-      // Implémenter un redémarrage logiciel ici si besoin
-      Serial.println("RESET");
+    // Ton code applicatif non-bloquant
+    if (newMessage) {
+      newMessage = false;
+      Serial.println("Nouveau message reçu.");
     }
-
-
-
-    // Traitement réception CAN brute (optionnel)
-    if (Can1.read(msg)) {
-          //CO_CANinterruptRx(CO->CANmodule);  // OK ici message reçu
-  messagePending = true;
-  Serial.println("Réception CAN brute :");
-
-  // Afficher les données du message CAN de manière lisible
-  Serial.print("ID: 0x");
-  Serial.println(msg.id, HEX);
-  Serial.print("DLC: ");
-  Serial.println(msg.len);
-  Serial.print("Data: ");
-  for (int i = 0; i < msg.len; i++) {
-    Serial.print("0x");
-    if (msg.buf[i] < 0x10) Serial.print("0"); // Padding pour affichage propre
-    Serial.print(msg.buf[i], HEX);
-    Serial.print(" ");
   }
-  Serial.println();
 
-  uint16_t potValue = (msg.buf[1] << 8) | msg.buf[0];
-potValue &= 0x0FFF;  // Masque pour garder les 12 bits
-
-Serial.print("Potentiomètre (12 bits) : ");
-Serial.print(potValue);
-Serial.print(" / ");
-Serial.println(4095);  // Valeur maximale sur 12 bits
-
-
-}
-
-    if(newMessage)
-    {
-      newMessage=false;
-      debug("YA UN NOUVEAU MESSAGE PUTAING DE MERDE QUOI U?NE FOIS");
-    }
-
-  }
-  if(canopen_5000ms_tick == 5000)
-  {
+  // -- Vérification du timer 5000ms --
+  if (canopen_5000ms_tick == 5000) {
     canopen_5000ms_tick = 0;
     Serial.println("Hardware Timer Alive ! (5000ms)");
   }
 }
+

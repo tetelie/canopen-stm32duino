@@ -2,9 +2,11 @@
 
 - **doc/** : some images and documentations  
 - **interface/** : Python interface to display potentiometer value  
-- **librairies/** : Arduino IDE libraries for master and slave  
-- **master/** : Bluepill implementation for master  
+- **librairies/** : Arduino IDE libraries for master and slave
+- **ODs/** : Object Dictionary folder
+- **master/** : Bluepill implementation for master
 - **slave/** : Bluepill implementation for slave
+- **master-rsp/** : Raspberry Pi implementation for master
 
 ### Project Subject
 <a href="https://github.com/tetelie/VACOP/blob/main/doc/sujet.pdf">[PDF] Subject</a>
