@@ -16,6 +16,22 @@
 extern "C" {
 #endif
 
+// Determining the CANOpen Driver
+
+#if defined(FDCAN) || defined(FDCAN1) || defined(FDCAN2) || defined(FDCAN3)
+#define CO_STM32_FDCAN_Driver 1
+#elif defined(CAN) || defined(CAN1) || defined(CAN2) || defined(CAN3)
+#define CO_STM32_CAN_Driver 1
+#else
+#error This STM32 Do not support CAN or FDCAN
+#endif
+
+#undef CO_CONFIG_STORAGE_ENABLE // We don't need Storage option, implement based on your use case and remove this line from here
+
+//#ifdef CO_DRIVER_CUSTOM
+//#include "CO_driver_custom.h"
+//#endif
+
 /* Stack configuration override default values. */
 #define CO_CONFIG_GLOBAL_FLAG_CALLBACK_PRE CO_CONFIG_FLAG_CALLBACK_PRE
 #define CO_CONFIG_GLOBAL_FLAG_TIMERNEXT CO_CONFIG_FLAG_TIMERNEXT
@@ -53,7 +69,7 @@ typedef uint_fast8_t bool_t;
 typedef float float32_t;
 typedef double float64_t;
 
-typedef struct CAN_message_t CAN_message_t;  // juste une déclaration
+//typedef struct CAN_message_t CAN_message_t;  // juste une déclaration
 
 
 /* Received message object */
@@ -112,8 +128,23 @@ typedef struct {
 #define CO_FLAG_CLEAR(rxNew) { CO_MemoryBarrier(); rxNew = NULL; }
 
 uint16_t CO_CANrxMsg_readIdent(void *msg);
+/*CO_CANrxMsg_readIdent est une fonction C++ déclarée avec un linkage C qui 
+extrait et retourne l'identifiant sur 11 bits d'un message CAN (type CAN_message_t) 
+passé en paramètre via un pointeur void *. Elle utilise un masque binaire (0x7FF) 
+pour isoler les 11 bits de l'identifiant.*/
+
+
 uint8_t *CO_CANrxMsg_readData(void *msg);
-uint8_t  CO_CANrxMsg_readDLC(void *msg);
+/*La fonction CO_CANrxMsg_readData est une fonction C compatible avec le 
+linkage C (extern "C") qui prend un pointeur générique void *msg en paramètre. 
+Elle retourne un pointeur vers un tableau d'octets (uint8_t *) correspondant 
+au champ buf de la structure CAN_message_t pointée par msg.*/
+
+uint8_t  CO_CANrxMsg_readDLC(void *msg); 
+/*La fonction CO_CANrxMsg_readDLC est une fonction C compatible avec l'ABI C 
+(extern "C") qui prend un pointeur void *msg représentant un message CAN et 
+retourne un entier non signé de 8 bits (uint8_t) correspondant à la longueur 
+du message (len) extraite de la structure CAN_message_t.*/
 
 
 /* Prototypes */

@@ -127,10 +127,11 @@ void setup() {
   delay(1000);
 
 
-  CO_LSS_address_t lssAddress = { .identity = { .vendorID = OD_PERSIST_COMM.x1018_identity.vendor_ID,
-                                                .productCode = OD_PERSIST_COMM.x1018_identity.productCode,
+  CO_LSS_address_t lssAddress = { .identity = { .vendorID       = OD_PERSIST_COMM.x1018_identity.vendor_ID,
+                                                .productCode    = OD_PERSIST_COMM.x1018_identity.productCode,
                                                 .revisionNumber = OD_PERSIST_COMM.x1018_identity.revisionNumber,
-                                                .serialNumber = OD_PERSIST_COMM.x1018_identity.serialNumber } };
+                                                .serialNumber   = OD_PERSIST_COMM.x1018_identity.serialNumber 
+                                              } };
 
   uint8_t nodeId = 0x01;   // identifiant noeud désiré
 
