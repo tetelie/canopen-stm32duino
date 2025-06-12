@@ -157,9 +157,13 @@ void CO_CANmodule_disable(CO_CANmodule_t* CANmodule) {
 /******************************************************************************/
 CO_ReturnError_t CO_CANrxBufferInit(CO_CANmodule_t *CANmodule, uint16_t index, uint16_t ident, uint16_t mask, bool_t rtr, void *object,
                                     void (*CANrx_callback)(void *object, void *message)) {
+
+  //log_printf("CO_CANrxBufferInit\n");
   CO_ReturnError_t ret = CO_ERROR_NO;
 
-  if ((CANmodule != NULL) && (object != NULL) && (CANrx_callback != NULL) && (index < CANmodule->rxSize)) {
+  if ((CANmodule != NULL) && (CANrx_callback != NULL) && (index < CANmodule->rxSize)) {
+
+    //log_printf("je suis rentrer dans la condition buffer init\n");
     /* buffer, which will be configured */
     CO_CANrx_t *buffer = &CANmodule->rxArray[index];
 
@@ -362,26 +366,72 @@ void CO_CANmodule_process(CO_CANmodule_t* CANmodule) {
 
 /******************************************************************************/
 void CO_CANinterruptRx(CO_CANmodule_t *CANmodule) {
-  if (!messagePending) return;
+    log_printf("MESSAGE REÇU !\n");
 
-  uint32_t ident = msg.id & 0x7FF;
-  CO_CANrx_t *buffer = NULL;
-  bool msgMatched = false;
-
-  for (uint16_t i = 0; i < CANmodule->rxSize; i++) {
-    buffer = &CANmodule->rxArray[i];
-    if (((ident ^ buffer->ident) & buffer->mask) == 0U) {
-      msgMatched = true;
-      break;
+    if (!messagePending) {
+        log_printf("Pas de message en attente.\n");
+        return;
     }
-  }
 
-  if (msgMatched && buffer && buffer->CANrx_callback) {
-    buffer->CANrx_callback(buffer->object, &msg);
-  }
+    log_printf("Début traitement message...\n");
 
-  messagePending = false;
+    uint32_t ident = msg.id & 0x7FF;
+    CO_CANrx_t *buffer = NULL;
+    bool msgMatched = false;
+
+    log_printf("CAN ID reçu : 0x%03X\n", ident);
+    log_printf("Recherche d'un buffer correspondant dans rxArray (%d entrées)...\n", CANmodule->rxSize);
+
+    for (uint16_t i = 0; i < CANmodule->rxSize; i++) {
+        buffer = &CANmodule->rxArray[i];
+        log_printf(" - Index %d : ident = 0x%03X, mask = 0x%03X\n", i, buffer->ident, buffer->mask);
+
+        if (((ident ^ buffer->ident) & buffer->mask) == 0U) {
+            log_printf("   -> Correspondance trouvée à l'index %d\n", i);
+            msgMatched = true;
+            break;
+        }
+    }
+
+    if (!msgMatched) {
+        log_printf("Aucun buffer correspondant trouvé pour l'ID 0x%03X\n", ident);
+    }
+
+    if (msgMatched) {
+        if (buffer == NULL) {
+            log_printf("ERREUR: Buffer est NULL malgré msgMatched = true !\n");
+        } else {
+            log_printf("Buffer trouvé : %p\n", (void*)buffer);
+            log_printf(" - Adresse du callback : %p\n", (void*)buffer->CANrx_callback);
+            log_printf(" - Objet : %p\n", buffer->object);
+
+            if (buffer->CANrx_callback == NULL) {
+                log_printf("ERREUR: Fonction de rappel CANrx_callback est NULL.\n");
+            } else {
+                // Copier le message pour éviter d'éventuelles corruptions
+                CAN_message_t localMsg = msg;
+
+                log_printf("Callback address = %p\n", buffer->CANrx_callback);
+
+                // Essayons de lire le code à cette adresse pour valider l'exécution
+                uint32_t *fn_ptr = (uint32_t*) buffer->CANrx_callback;
+                log_printf("Première instruction à l’adresse : 0x%08X\n", *fn_ptr);
+
+                log_printf("Appel de la fonction de rappel...\n");
+
+                // Bloc try-catch n'existe pas en C, mais on entoure l'appel de logs
+                //buffer->CANrx_callback(buffer->object, &localMsg);
+
+                log_printf("Fonction de rappel exécutée sans crash.\n");
+            }
+        }
+    }
+
+    messagePending = false;
+    log_printf("Fin traitement message.\n\n");
 }
+
+
 
 // ---------------- SDO client helpers ----------------
 

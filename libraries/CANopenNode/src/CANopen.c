@@ -1216,6 +1216,9 @@ CO_ReturnError_t CO_CANopenInitPDO(CO_t *co,
                                    uint8_t nodeId,
                                    uint32_t *errInfo)
 {
+
+    log_printf("INIT PDO \n");
+
     if (co == NULL) {
         return CO_ERROR_ILLEGAL_ARGUMENT;
     }
@@ -1241,6 +1244,7 @@ CO_ReturnError_t CO_CANopenInitPDO(CO_t *co,
                                 + nodeId + nodeIdOffset;
 #endif
             }
+            log_printf("avant CO_RPDO_init \n");
             err = CO_RPDO_init(&co->RPDO[i],
                                od,
                                em,
@@ -1253,7 +1257,11 @@ CO_ReturnError_t CO_CANopenInitPDO(CO_t *co,
                                co->CANmodule,
                                CO_GET_CO(RX_IDX_RPDO) + i,
                                errInfo);
+            log_printf("après CO_RPDO_init \n");
+
             if (err) return err;
+            log_printf("YA PASDERREUR PEYIY \n");
+
         }
     }
 #endif
@@ -1294,7 +1302,6 @@ CO_ReturnError_t CO_CANopenInitPDO(CO_t *co,
 
     return CO_ERROR_NO;
 }
-
 
 /******************************************************************************/
 CO_NMT_reset_cmd_t CO_process(CO_t *co,
