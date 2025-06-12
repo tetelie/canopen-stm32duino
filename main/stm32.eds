@@ -1,0 +1,88 @@
+[FileInfo]
+FileName=bluepill.eds
+FileVersion=1.0
+FileDescription=Minimal EDS for STM32 Bluepill CANopen Node
+CreationDate=2025-06-12
+CreatedBy=ChatGPT
+ModificationDate=2025-06-12
+
+[DeviceInfo]
+VendorName=OpenAI
+VendorNumber=0
+ProductName=Bluepill_CANopen_Node
+ProductNumber=1
+RevisionNumber=1
+OrderCode=BP-CO-001
+BaudRate_0=10
+BaudRate_1=20
+BaudRate_2=50
+BaudRate_3=125
+BaudRate_4=250
+BaudRate_5=500
+BaudRate_6=800
+BaudRate_7=1000
+SimpleBootUpMaster=0
+SimpleBootUpSlave=1
+
+[Comments]
+This is a minimal EDS file for a Bluepill CANopen slave with 0x2000:00 as a readable variable.
+
+[MandatoryObjects]
+1=0x1000
+2=0x1001
+3=0x1018
+4=0x2000
+
+[1000]
+ParameterName=Device Type
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=0x00000000
+PDOMapping=0
+
+[1001]
+ParameterName=Error Register
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=0x00
+PDOMapping=0
+
+[1018]
+ParameterName=Identity Object
+ObjectType=0x9
+SubNumber=4
+Sub0=4
+
+[1018sub1]
+ParameterName=Vendor ID
+DataType=0x0007
+AccessType=ro
+DefaultValue=0x00000001
+
+[1018sub2]
+ParameterName=Product Code
+DataType=0x0007
+AccessType=ro
+DefaultValue=0x00000001
+
+[1018sub3]
+ParameterName=Revision Number
+DataType=0x0007
+AccessType=ro
+DefaultValue=0x00000001
+
+[1018sub4]
+ParameterName=Serial Number
+DataType=0x0007
+AccessType=ro
+DefaultValue=0x00000001
+
+[2000]
+ParameterName=TestVariable
+ObjectType=0x7
+DataType=0x0005 ; UNSIGNED8
+AccessType=ro
+DefaultValue=0x42
+PDOMapping=1
