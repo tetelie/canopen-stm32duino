@@ -1215,7 +1215,7 @@ CO_ReturnError_t CO_CANopenInitPDO(CO_t *co,
                                    OD_t *od,
                                    uint8_t nodeId,
                                    uint32_t *errInfo)
-{
+{   
     if (co == NULL) {
         return CO_ERROR_ILLEGAL_ARGUMENT;
     }
