@@ -1275,6 +1275,7 @@ CO_ReturnError_t CO_CANopenInitPDO(CO_t *co,
             if (i < CO_TPDO_DEFAULT_CANID_COUNT) {
 #if CO_TPDO_DEFAULT_CANID_COUNT <= 4
                 preDefinedCanId = (CO_CAN_ID_TPDO_1 + i * 0x100) + nodeId;
+                log_printf("%d \n",preDefinedCanId);
 #else
                 uint16_t pdoOffset = i % 4;
                 uint16_t nodeIdOffset = i / 4;

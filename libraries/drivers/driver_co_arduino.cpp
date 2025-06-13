@@ -414,7 +414,7 @@ void CO_CANinterruptRx(CO_CANmodule_t *CANmodule) {
                 log_printf("Appel de la fonction de rappel...\n");
 
                 // Bloc try-catch n'existe pas en C, mais on entoure l'appel de logs
-                //buffer->CANrx_callback(buffer->object, &localMsg);
+                buffer->CANrx_callback(buffer->object, &localMsg);
 
                 log_printf("Fonction de rappel exécutée sans crash.\n");
             }

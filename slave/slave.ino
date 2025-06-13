@@ -222,7 +222,7 @@ void loop() {
   static uint32_t lastProcessTime = 0;
 
   int value = analogRead(PA0);
-  Serial.println(value);
+  //Serial.println(value);
 
   if (canopen_1ms_tick) { // ce flag est mis à vrai à chaque iteration du timer hardware
     canopen_1ms_tick = false; // on met le flag directement à faux
@@ -254,7 +254,7 @@ void loop() {
     if (Can1.read(msg)) {
       messagePending = true;
     }
-    CO_CANinterruptRx(CO->CANmodule);  // OK ici message reçu
+    //CO_CANinterruptRx(CO->CANmodule);  // OK ici message reçu
 
     if (newMessage) {
       newMessage = false;
