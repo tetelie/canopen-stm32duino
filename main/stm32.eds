@@ -1,88 +1,142 @@
 [FileInfo]
-FileName=bluepill.eds
-FileVersion=1.0
-FileDescription=Minimal EDS for STM32 Bluepill CANopen Node
-CreationDate=2025-06-12
-CreatedBy=ChatGPT
-ModificationDate=2025-06-12
+FileName=stm32.eds
+FileVersion=1
+FileRevision=1
+LastEDS=
+EDSVersion=4.0
+Description=
+CreationTime=9:56AM
+CreationDate=06-13-2025
+CreatedBy=
+ModificationTime=10:08AM
+ModificationDate=06-13-2025
+ModifiedBy=
 
 [DeviceInfo]
-VendorName=OpenAI
-VendorNumber=0
-ProductName=Bluepill_CANopen_Node
-ProductNumber=1
-RevisionNumber=1
-OrderCode=BP-CO-001
-BaudRate_0=10
-BaudRate_1=20
-BaudRate_2=50
-BaudRate_3=125
-BaudRate_4=250
-BaudRate_5=500
-BaudRate_6=800
-BaudRate_7=1000
+VendorName=Bluepill CANopen
+VendorNumber=
+ProductName=Minimal Slave
+ProductNumber=
+RevisionNumber=0
+BaudRate_10=0
+BaudRate_20=0
+BaudRate_50=0
+BaudRate_125=0
+BaudRate_250=0
+BaudRate_500=1
+BaudRate_800=0
+BaudRate_1000=0
 SimpleBootUpMaster=0
-SimpleBootUpSlave=1
+SimpleBootUpSlave=0
+Granularity=8
+DynamicChannelsSupported=0
+CompactPDO=0
+GroupMessaging=0
+NrOfRXPDO=0
+NrOfTXPDO=0
+LSS_Supported=1
+NG_Slave=0
 
-[DeviceCom]
-NodeID=0
+[DummyUsage]
+Dummy0001=0
+Dummy0002=0
+Dummy0003=0
+Dummy0004=0
+Dummy0005=0
+Dummy0006=0
+Dummy0007=0
+
+[Comments]
+Lines=0
 
 [MandatoryObjects]
+SupportedObjects=3
 1=0x1000
 2=0x1001
 3=0x1018
-4=0x2000
 
 [1000]
 ParameterName=Device Type
 ObjectType=0x7
+;StorageLocation=RAM
 DataType=0x0007
 AccessType=ro
-DefaultValue=0x00000000
+DefaultValue=0
 PDOMapping=0
 
 [1001]
 ParameterName=Error Register
 ObjectType=0x7
-DataType=0x0005
+;StorageLocation=RAM
+DataType=0x0007
 AccessType=ro
-DefaultValue=0x00
+DefaultValue=0
 PDOMapping=0
 
 [1018]
 ParameterName=Identity Object
 ObjectType=0x9
-SubNumber=4
-Sub0=4
+;StorageLocation=RAM
+SubNumber=0x5
+
+[1018sub0]
+ParameterName=Highest sub-index supported
+ObjectType=0x7
+;StorageLocation=RAM
+DataType=0x0005
+AccessType=ro
+DefaultValue=0x04
+PDOMapping=0
 
 [1018sub1]
 ParameterName=Vendor ID
+ObjectType=0x7
+;StorageLocation=RAM
 DataType=0x0007
-AccessType=ro
-DefaultValue=0x00000001
+AccessType=rw
+DefaultValue=0x12345678
+PDOMapping=0
 
 [1018sub2]
 ParameterName=Product Code
+ObjectType=0x7
+;StorageLocation=RAM
 DataType=0x0007
-AccessType=ro
-DefaultValue=0x00000001
+AccessType=rw
+DefaultValue=0x0001
+PDOMapping=0
 
 [1018sub3]
 ParameterName=Revision Number
+ObjectType=0x7
+;StorageLocation=RAM
 DataType=0x0007
-AccessType=ro
+AccessType=rw
 DefaultValue=0x00000001
+PDOMapping=0
 
 [1018sub4]
 ParameterName=Serial Number
+ObjectType=0x7
+;StorageLocation=RAM
 DataType=0x0007
-AccessType=ro
-DefaultValue=0x00000001
+AccessType=rw
+DefaultValue=0x00000042
+PDOMapping=0
+
+[OptionalObjects]
+SupportedObjects=0
+
+[ManufacturerObjects]
+SupportedObjects=1
+1=0x2000
 
 [2000]
-ParameterName=TestVariable
+ParameterName=Bluepill Var
 ObjectType=0x7
-DataType=0x0005 ; UNSIGNED8
-AccessType=ro
-DefaultValue=0x42
-PDOMapping=1
+;StorageLocation=RAM
+DataType=0x0005
+AccessType=rw
+DefaultValue=0
+PDOMapping=0
+
