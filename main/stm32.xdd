@@ -15,12 +15,12 @@
         <ProfileTechnology>CANopen</ProfileTechnology>
       </ISO15745Reference>
     </ProfileHeader>
-    <ProfileBody xmlns:q1="http://www.canopen.org/xml/1.1" xsi:type="q1:ProfileBody_Device_CANopen" formatName="CANopen" formatVersion="1.0" fileName="stm32.xdd" fileCreator="" fileCreationDate="2025-06-13" fileCreationTime="09:56:22.0000000+02:00" fileModifiedBy="" fileModificationDate="2025-06-13" fileModificationTime="10:08:22.2253212+02:00" fileVersion="1" supportedLanguages="en" xmlns="">
+    <ProfileBody xmlns:q1="http://www.canopen.org/xml/1.1" xsi:type="q1:ProfileBody_Device_CANopen" formatName="CANopen" formatVersion="1.0" fileName="stm32.xdd" fileCreator="" fileCreationDate="2025-06-13" fileCreationTime="09:56:22.0000000+02:00" fileModifiedBy="" fileModificationDate="2025-06-13" fileModificationTime="10:20:57.9117829+02:00" fileVersion="1" supportedLanguages="en" xmlns="">
       <q1:DeviceIdentity>
         <q1:vendorName>Bluepill CANopen</q1:vendorName>
-        <q1:vendorID></q1:vendorID>
+        <q1:vendorID>0</q1:vendorID>
         <q1:productName>Minimal Slave</q1:productName>
-        <q1:productID></q1:productID>
+        <q1:productID>0</q1:productID>
         <q1:version versionType="SW">0</q1:version>
         <q1:version versionType="FW">0</q1:version>
         <q1:version versionType="HW">0</q1:version>
@@ -105,7 +105,7 @@
           <q1:parameter uniqueID="UID_OBJ_2000" access="readWrite">
             <description lang="en">Variable test dans STM32.</description>
             <USINT />
-            <q1:defaultValue value="0" />
+            <q1:defaultValue value="0x42" />
           </q1:parameter>
         </q1:parameterList>
       </q1:ApplicationProcess>
@@ -124,7 +124,7 @@
         <ProfileTechnology>CANopen</ProfileTechnology>
       </ISO15745Reference>
     </ProfileHeader>
-    <ProfileBody xmlns:q2="http://www.canopen.org/xml/1.1" xsi:type="q2:ProfileBody_CommunicationNetwork_CANopen" formatName="CANopen" formatVersion="1.0" fileName="stm32.xdd" fileCreator="" fileCreationDate="2025-06-13" fileCreationTime="09:56:22.0000000+02:00" fileModificationDate="2025-06-13" fileModificationTime="10:08:22.2253212+02:00" fileVersion="1" supportedLanguages="en" xmlns="">
+    <ProfileBody xmlns:q2="http://www.canopen.org/xml/1.1" xsi:type="q2:ProfileBody_CommunicationNetwork_CANopen" formatName="CANopen" formatVersion="1.0" fileName="stm32.xdd" fileCreator="" fileCreationDate="2025-06-13" fileCreationTime="09:56:22.0000000+02:00" fileModificationDate="2025-06-13" fileModificationTime="10:20:57.9117829+02:00" fileVersion="1" supportedLanguages="en" xmlns="">
       <ApplicationLayers>
         <q2:CANopenObjectList>
           <CANopenObject index="1000" name="Device Type" objectType="7" PDOmapping="no" uniqueIDRef="UID_OBJ_1000" />

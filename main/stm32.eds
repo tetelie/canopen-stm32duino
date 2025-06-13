@@ -8,15 +8,15 @@ Description=
 CreationTime=9:56AM
 CreationDate=06-13-2025
 CreatedBy=
-ModificationTime=10:08AM
+ModificationTime=10:20AM
 ModificationDate=06-13-2025
 ModifiedBy=
 
 [DeviceInfo]
 VendorName=Bluepill CANopen
-VendorNumber=
+VendorNumber=0
 ProductName=Minimal Slave
-ProductNumber=
+ProductNumber=0
 RevisionNumber=0
 BaudRate_10=0
 BaudRate_20=0
@@ -137,6 +137,6 @@ ObjectType=0x7
 ;StorageLocation=RAM
 DataType=0x0005
 AccessType=rw
-DefaultValue=0
+DefaultValue=0x42
 PDOMapping=0
 
