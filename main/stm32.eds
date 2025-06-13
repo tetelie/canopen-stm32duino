@@ -8,7 +8,7 @@ Description=
 CreationTime=9:56AM
 CreationDate=06-13-2025
 CreatedBy=Leginyora Iban
-ModificationTime=10:40AM
+ModificationTime=2:49PM
 ModificationDate=06-13-2025
 ModifiedBy=Leginyora Iban
 
@@ -34,8 +34,8 @@ CompactPDO=0
 GroupMessaging=0
 NrOfRXPDO=4
 NrOfTXPDO=4
-LSS_Supported=1
-NG_Slave=0
+LSS_Supported=0
+NG_Slave=1
 
 [DummyUsage]
 Dummy0001=0
