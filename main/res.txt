@@ -1,6 +1,7 @@
+vacop@raspberrypi:~/Desktop/VACOP/main $ python3 master_rsp.py 
 Traceback (most recent call last):
   File "/home/vacop/Desktop/VACOP/main/master_rsp.py", line 13, in <module>
-    node = canopen.RemoteNode(0, 'stm32.eds')  # idéalement avec un fichier EDS réel
+    node = canopen.RemoteNode(0, 'stm32.eds')
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/home/vacop/.local/lib/python3.11/site-packages/canopen/node/remote.py", line 39, in __init__
     self.sdo = self.add_sdo(0x600 + self.id, 0x580 + self.id)
