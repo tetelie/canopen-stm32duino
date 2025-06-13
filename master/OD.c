@@ -47,7 +47,7 @@ OD_ATTR_PERSIST_COMM OD_PERSIST_COMM_t OD_PERSIST_COMM = {
     },
     .x1400_RPDOCommunicationParameter = {
         .highestSub_indexSupported = 0x05,
-        .COB_IDUsedByRPDO = 0x00000180,
+        .COB_IDUsedByRPDO = 0x00000181,
         .transmissionType = 0xFE,
         .eventTimer = 0x0000
     },
