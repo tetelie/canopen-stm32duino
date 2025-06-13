@@ -20,7 +20,6 @@ to same folder with sketch and haven #define HAL_CAN_MODULE_ENABLED there. See e
 #define STM32_CAN_H
 
 #include <Arduino.h>
-#include "hal_patch.h"
 
 /** Handling special cases for IRQ Handlers */
 #if defined(STM32F0xx)
@@ -442,6 +441,42 @@ class STM32_CAN {
       },
       {
         100000, 25, 18, 15, 2
+      }
+    };
+
+    static constexpr Baudrate_entry_t BAUD_RATE_TABLE_42M[] {
+      {
+        1000000, 3, 14, 11, 2
+      },
+      {
+        500000, 6, 14, 11, 2
+      },
+      {
+        250000, 12, 14, 11, 2
+      },
+      {
+        125000, 21, 16, 13, 2
+      },
+      {
+        100000, 28, 15, 12, 2
+      }
+    };
+
+    static constexpr Baudrate_entry_t BAUD_RATE_TABLE_36M[] {
+      {
+        1000000, 2, 18, 15, 2
+      },
+      {
+        500000, 4, 18, 15, 2
+      },
+      {
+        250000, 9, 16, 13, 2
+      },
+      {
+        125000, 18, 16, 13, 2
+      },
+      {
+        100000, 20, 18, 15, 2
       }
     };
 
