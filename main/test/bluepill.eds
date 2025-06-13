@@ -1,0 +1,69 @@
+[FileInfo]
+FileName=bluepill.eds
+FileVersion=1.0
+Description=EDS minimal pour STM32 Bluepill
+CreationTime=2025-06-13
+CreatedBy=ChatGPT
+
+[Device]
+VendorName=Bluepill
+ProductName=MinimalCANopenNode
+VendorNumber=0x12345678
+ProductNumber=0x00000001
+RevisionNumber=0x00000001
+OrderCode=BP-CAN
+NodeID=0
+
+[MandatoryObjects]
+SupportedObjects=4
+Index0=0x1000
+Index1=0x1001
+Index2=0x1018
+Index3=0x2000
+
+[1000]
+ParameterName=Device Type
+ObjectType=0x7
+DataType=0x0007 ; UNSIGNED32
+AccessType=ro
+DefaultValue=0x00000000
+
+[1001]
+ParameterName=Error Register
+ObjectType=0x7
+DataType=0x0005 ; UNSIGNED8
+AccessType=ro
+DefaultValue=0x00
+
+[1018]
+ParameterName=Identity Object
+ObjectType=0x9
+SubNumber=4
+Sub0=4
+
+Sub1Name=Vendor ID
+Sub1Type=0x0007
+Sub1Access=ro
+Sub1DefaultValue=0x12345678
+
+Sub2Name=Product Code
+Sub2Type=0x0007
+Sub2Access=ro
+Sub2DefaultValue=0x00000001
+
+Sub3Name=Revision Number
+Sub3Type=0x0007
+Sub3Access=ro
+Sub3DefaultValue=0x00000001
+
+Sub4Name=Serial Number
+Sub4Type=0x0007
+Sub4Access=ro
+Sub4DefaultValue=0x00000042
+
+[2000]
+ParameterName=Test Variable
+ObjectType=0x7
+DataType=0x0005 ; UNSIGNED8
+AccessType=rw
+DefaultValue=0x42
