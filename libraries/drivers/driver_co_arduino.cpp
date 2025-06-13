@@ -161,6 +161,10 @@ CO_ReturnError_t CO_CANrxBufferInit(CO_CANmodule_t *CANmodule, uint16_t index, u
   //log_printf("CO_CANrxBufferInit\n");
   CO_ReturnError_t ret = CO_ERROR_NO;
 
+  log_printf("Buffer enregistré : index = %d, ID = 0x%03X, mask = 0x%03X, cb = %p\n",
+              index, ident, mask, CANmodule->rxArray[index].CANrx_callback);
+
+
   if ((CANmodule != NULL) && (CANrx_callback != NULL) && (index < CANmodule->rxSize)) {
 
     //log_printf("je suis rentrer dans la condition buffer init\n");
@@ -169,7 +173,10 @@ CO_ReturnError_t CO_CANrxBufferInit(CO_CANmodule_t *CANmodule, uint16_t index, u
 
     /* Configure object variables */
     buffer->object = object;
+
     buffer->CANrx_callback = CANrx_callback;
+    log_printf("Callback assigné : index=%d, cb=%p\n", index, CANrx_callback);
+
 
     /* CAN identifier and CAN mask, bit aligned with CAN module. Different on different microcontrollers. */
     /*

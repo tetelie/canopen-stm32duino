@@ -473,7 +473,7 @@ static void CO_PDO_receive(void *object, void *msg) {
     uint8_t *data = CO_CANrxMsg_readData(msg);
     uint8_t err = RPDO->receiveError;
 
-    log_printf("J4AI RECU UN PDO\n");
+    log_printf("J4AI RECU UN PDO \n");
 
     if (PDO->valid) {
         if (DLC >= PDO->dataLength) {

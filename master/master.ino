@@ -91,7 +91,7 @@ void setup() {
     --------------------------------------------*/
   uint32_t errInfo = 0;
   uint16_t bitrate = 500000;  // en kbps → 500 kbps
-  uint8_t nodeId = 0x01;   // identifiant noeud désiré
+  uint8_t nodeId = 0x03;   // identifiant noeud désiré
 
   /* chargement du dictionnaire d'objets */
   CO_config_t* config_ptr = NULL;
@@ -217,6 +217,8 @@ void setup() {
   debug("après InitPDO");
   print_delay(2000);
 
+
+
   /*--------------------------------------------
       Initialisation du Timer Hardware (1ms)
     --------------------------------------------*/
@@ -265,13 +267,16 @@ void loop() {
   uint32_t now = millis();
   uint32_t diffMain = now - lastTimeMain;
 
+  /*--------------------------------------------
+      Début Boucle Principal (5ms)
+    --------------------------------------------*/
   // -- Boucle principale, exécution toutes les ~5ms --
   if (diffMain > 5) {
     lastTimeMain = now;
 
     uint32_t timerNext_us = 0;
     CO_NMT_reset_cmd_t reset = CO_process(CO, false, diffMain * 1000, &timerNext_us);
-    
+
     // Traitement réception CAN brute (optionnel)
     if (Can1.read(msg)) {
       CO_CANinterruptRx(CO->CANmodule);  // OK ici message reçu
@@ -284,7 +289,13 @@ void loop() {
       // Implémenter un redémarrage ou une réinit si besoin
     }
   }
+  /*--------------------------------------------
+      Fin Boucle Principal
+    --------------------------------------------*/
 
+  /*--------------------------------------------
+      Début Boucle temps réel (1ms)
+    --------------------------------------------*/
   // -- Traitement cyclique toutes les 1ms via le flag timer --
   if (canopen_1ms_tick) {
     canopen_1ms_tick = false;
@@ -307,11 +318,17 @@ void loop() {
       Serial.println("Nouveau message reçu.");
     }
   }
+  /*--------------------------------------------
+      Fin Boucle temps réel
+    --------------------------------------------*/
 
+
+  /*--------------------------------------------
+      Vérification tu timer hardware
+    --------------------------------------------*/
   // -- Vérification du timer 5000ms --
   if (canopen_5000ms_tick == 5000) {
     canopen_5000ms_tick = 0;
     Serial.println("Hardware Timer Alive ! (5000ms)");
   }
 }
-
