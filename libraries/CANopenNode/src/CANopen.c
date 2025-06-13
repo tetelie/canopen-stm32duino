@@ -1218,7 +1218,6 @@ CO_ReturnError_t CO_CANopenInitPDO(CO_t *co,
 {
 
     log_printf("INIT PDO \n");
-
     if (co == NULL) {
         return CO_ERROR_ILLEGAL_ARGUMENT;
     }

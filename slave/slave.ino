@@ -132,7 +132,7 @@ void setup() {
                                                 .revisionNumber = OD_PERSIST_COMM.x1018_identity.revisionNumber,
                                                 .serialNumber = OD_PERSIST_COMM.x1018_identity.serialNumber } };
 
-  uint8_t nodeId = 0x01;   // identifiant noeud désiré
+  uint8_t nodeId = 0x02;   // identifiant noeud désiré
 
   err = CO_LSSinit(CO, &lssAddress, &nodeId, &bitrate);
   if (err != CO_ERROR_NO) {
@@ -189,7 +189,7 @@ void setup() {
   delay(2000);
 
   // Enregistrement du callback de recetpion
-  CO_CANrxBufferInit(CO->CANmodule, 0, 0x000, 0x000, false, NULL, myRxCallback);
+  //CO_CANrxBufferInit(CO->CANmodule, 0, 0x000, 0x000, false, NULL, myRxCallback);
   debug("après rxBufferInit");
   delay(1000);
 
